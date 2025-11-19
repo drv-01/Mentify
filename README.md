@@ -15,4 +15,4 @@ A comprehensive mental health and wellness platform for students.
 - Deployment: Vercel (Frontend) + Render (Backend)
 
 
-- Made by Dhruv Kumar
+Made by Dhruv Kumar
