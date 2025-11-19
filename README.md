@@ -13,3 +13,6 @@ A comprehensive mental health and wellness platform for students.
 - Backend: Node.js/Express
 - Database: MongoDB
 - Deployment: Vercel (Frontend) + Render (Backend)
+
+
+Made by Dhruv Kumar
