@@ -30,13 +30,20 @@ const Signup = ({ setIsAuthenticated }) => {
     }
 
     try {
-      const response = await axios.post('https://mentify-backend.onrender.com/api/auth/signup', {
+      const response = await axios.post('https://mentify.onrender.com/api/auth/signup', {
         name: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
       })
+      // const response = await axios.post('http://localhost:8000/api/auth/signup', {
+      //   name: formData.name,
+      //   email: formData.email,
+      //   password: formData.password,
+      //   confirmPassword: formData.confirmPassword
+      // })
       localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
+      localStorage.setItem('user', JSON.stringify({ name: formData.name }))
       localStorage.setItem('isNewUser', 'true')
       setIsAuthenticated(true)
     } catch (err) {

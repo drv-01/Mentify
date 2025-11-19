@@ -4,9 +4,9 @@ const { hashPassword, verifyPassword } = require("../Utils/bcryptPassword.js");
 const { generateToken } = require("../Utils/token.js");
 configDotenv();
 const signupUser = async (req, res) => {
-  const { name, email, phoneNumber, password, confirmPassword } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
-  if (!name || !email || !phoneNumber || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword) {
     return res.status(400).json({ message: "All fields are required!" });
   }
 
@@ -22,7 +22,7 @@ const signupUser = async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
     const newUser = await prisma.users.create({
-      data: { name, email, phoneNumber, password: hashedPassword },
+      data: { name, email, password: hashedPassword },
     });
 
     const tokens = generateToken(newUser.id);
