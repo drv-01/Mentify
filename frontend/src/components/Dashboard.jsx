@@ -8,6 +8,18 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [isNewUser, setIsNewUser] = useState(false)
 
   useEffect(() => {
+    // Handle OAuth redirect with token
+    const urlParams = new URLSearchParams(window.location.search)
+    const token = urlParams.get('token')
+    
+    if (token) {
+      localStorage.setItem('token', token)
+      localStorage.setItem('isNewUser', 'true')
+      setIsAuthenticated(true)
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+    
     const userData = localStorage.getItem('user')
     const theme = localStorage.getItem('theme')
     const newUserFlag = localStorage.getItem('isNewUser')
@@ -16,7 +28,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
     }
     setIsToggled(theme === 'dark')
     setIsNewUser(newUserFlag === 'true')
-  }, [])
+  }, [setIsAuthenticated])
 
   useEffect(() => {
     // Clear the flag after component has rendered with the message

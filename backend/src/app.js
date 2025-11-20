@@ -2,6 +2,8 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const session = require('express-session');
+const passport = require('./config/passport');
 const authRoutes = require("./routes/authRouts.js")
 
 const app = express();
@@ -20,6 +22,16 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Basic GET route
 app.get('/', (req, res) => {
