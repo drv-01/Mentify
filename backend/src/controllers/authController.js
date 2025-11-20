@@ -2,7 +2,6 @@ const { configDotenv } = require("dotenv");
 const prisma = require("../db/prisma.js");
 const { hashPassword, verifyPassword } = require("../Utils/bcryptPassword.js");
 const { generateToken } = require("../Utils/token.js");
-const passport = require('passport');
 configDotenv();
 const signupUser = async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
@@ -73,33 +72,4 @@ const getUser = async (req, res) => {
   }
 };
 
-const googleAuth = passport.authenticate('google', {
-  scope: ['profile', 'email']
-});
-
-const googleCallback = async (req, res) => {
-  try {
-    const tokens = generateToken(req.user.id);
-    res.cookie('token', tokens.accessTokens, { 
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', 
-      maxAge: 24 * 60 * 60 * 1000 
-    });
-    
-    // Redirect to frontend with token
-    const redirectUrl = process.env.NODE_ENV === 'production' 
-      ? `https://mentifyapp.vercel.app/dashboard?token=${tokens.accessTokens}`
-      : `http://localhost:5173/dashboard?token=${tokens.accessTokens}`;
-    
-    return res.redirect(redirectUrl);
-  } catch (error) {
-    const errorUrl = process.env.NODE_ENV === 'production'
-      ? 'https://mentifyapp.vercel.app/login?error=oauth_failed'
-      : 'http://localhost:5173/login?error=oauth_failed';
-    
-    return res.redirect(errorUrl);
-  }
-};
-
-module.exports = { signupUser, loginUser, getUser, googleAuth, googleCallback };
+module.exports = { signupUser, loginUser, getUser };

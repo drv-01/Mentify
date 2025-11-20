@@ -8,27 +8,60 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [isNewUser, setIsNewUser] = useState(false)
 
   useEffect(() => {
+    console.log('📊 Dashboard mounted, checking for OAuth token...')
+    
     // Handle OAuth redirect with token
     const urlParams = new URLSearchParams(window.location.search)
     const token = urlParams.get('token')
+    const userParam = urlParams.get('user')
+    const isNewUserParam = urlParams.get('isNewUser')
+    const error = urlParams.get('error')
     
-    if (token) {
-      localStorage.setItem('token', token)
-      localStorage.setItem('isNewUser', 'true')
-      setIsAuthenticated(true)
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname)
+    console.log('URL params:', { token: token ? 'present' : 'none', user: userParam ? 'present' : 'none', isNewUser: isNewUserParam, error })
+    
+    if (error) {
+      console.error('❌ OAuth Error:', error)
+      navigate('/login?error=oauth_failed')
+      return
     }
     
-    const userData = localStorage.getItem('user')
+    if (token && userParam) {
+      console.log('✅ OAuth token and user data received, setting up user...')
+      try {
+        const userData = JSON.parse(decodeURIComponent(userParam))
+        localStorage.setItem('token', token)
+        localStorage.setItem('user', JSON.stringify(userData))
+        localStorage.setItem('isNewUser', isNewUserParam || 'false')
+        setUser(userData)
+        setIsNewUser(isNewUserParam === 'true')
+        setIsAuthenticated(true)
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+        console.log('✅ OAuth login successful!')
+      } catch (err) {
+        console.error('❌ Error parsing user data:', err)
+        navigate('/login?error=oauth_failed')
+        return
+      }
+    } else {
+      // Check existing localStorage data
+      const userData = localStorage.getItem('user')
+      const newUserFlag = localStorage.getItem('isNewUser')
+      
+      console.log('Local storage data:', { 
+        userData: userData ? 'present' : 'none', 
+        newUserFlag 
+      })
+      
+      if (userData) {
+        setUser(JSON.parse(userData))
+      }
+      setIsNewUser(newUserFlag === 'true')
+    }
+    
     const theme = localStorage.getItem('theme')
-    const newUserFlag = localStorage.getItem('isNewUser')
-    if (userData) {
-      setUser(JSON.parse(userData))
-    }
     setIsToggled(theme === 'dark')
-    setIsNewUser(newUserFlag === 'true')
-  }, [setIsAuthenticated])
+  }, [setIsAuthenticated, navigate])
 
   useEffect(() => {
     // Clear the flag after component has rendered with the message
@@ -209,9 +242,11 @@ const Dashboard = ({ setIsAuthenticated }) => {
                       <p className={`font-semibold text-sm ${
                         isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
                       }`}>{user.name}</p>
-                      <p className={`text-xs ${
-                        isToggled ? 'text-[#62dafb]/70' : 'text-[#2c5282]/70'
-                      }`}>{user.email}</p>
+                      {user.email && (
+                        <p className={`text-xs ${
+                          isToggled ? 'text-[#62dafb]/70' : 'text-[#2c5282]/70'
+                        }`}>{user.email}</p>
+                      )}
                     </div>
                   </button>
                   <button

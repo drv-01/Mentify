@@ -7,9 +7,18 @@ const Login = ({ setIsAuthenticated }) => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [isToggled, setIsToggled] = useState(false)
+  
   useEffect(() => {
     const theme = localStorage.getItem('theme')
     setIsToggled(theme === 'dark')
+    
+    // Check for OAuth error in URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const oauthError = urlParams.get('error')
+    if (oauthError) {
+      console.log('OAuth Error:', oauthError)
+      setError('Google authentication failed. Please try again.')
+    }
   }, [])
 
   const handleSubmit = async (e) => {
@@ -18,8 +27,10 @@ const Login = ({ setIsAuthenticated }) => {
     setError('')
 
     try {
-      // const response = await axios.post('http://localhost:8000/api/auth/login', formData)
-      const response = await axios.post('https://mentify.onrender.com/api/auth/login', formData)
+      const API_URL = import.meta.env.MODE === 'production' 
+        ? import.meta.env.VITE_PROD_API_URL 
+        : import.meta.env.VITE_API_URL
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData)
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify({ name: response.data.name }))
       localStorage.setItem('isNewUser', 'false')
@@ -143,7 +154,12 @@ const Login = ({ setIsAuthenticated }) => {
           </div>
 
           <button
-            onClick={() => window.location.href = 'https://mentify.onrender.com/api/auth/google'}
+            onClick={() => {
+              const API_URL = import.meta.env.MODE === 'production' 
+                ? import.meta.env.VITE_PROD_API_URL 
+                : import.meta.env.VITE_API_URL
+              window.location.href = `${API_URL}/api/auth/google`
+            }}
             className={`mt-4 w-full flex items-center justify-center px-4 py-3 border rounded-xl font-semibold tracking-wide transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
               isToggled 
                 ? 'border-[#62dafb]/30 bg-[#00d4aa]/10 text-[#62dafb] hover:bg-[#00d4aa]/20' 
