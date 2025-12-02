@@ -26,8 +26,8 @@ const Landing = () => {
   return (
     <div className={`min-h-screen transition-all duration-700 ${
       isToggled 
-        ? 'bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
-        : 'bg-gradient-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
+        ? 'bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
+        : 'bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
     }`} style={{ scrollBehavior: 'smooth' }}>
       <div className="relative z-10">
         <Navbar 
@@ -47,16 +47,16 @@ const Landing = () => {
             />
             <div className={`absolute inset-0 ${
               isToggled 
-                ? 'bg-gradient-to-br from-[#1a1a2e]/85 via-[#16213e]/75 to-[#0f3460]/85' 
-                : 'bg-gradient-to-br from-white/70 via-cyan-50/60 to-teal-50/70'
+                ? 'bg-linear-to-br from-[#1a1a2e]/85 via-[#16213e]/75 to-[#0f3460]/85' 
+                : 'bg-linear-to-br from-white/70 via-cyan-50/60 to-teal-50/70'
             }`}></div>
           </div>
           
           <div className="max-w-4xl relative z-10">
             {/* <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-8 transition-all duration-500 shadow-2xl ${
               isToggled 
-                ? 'bg-gradient-to-r from-[#68D391] to-[#9AE6B4]' 
-                : 'bg-gradient-to-r from-[#4299E1] to-[#63B3ED]'
+                ? 'bg-linear-to-r from-[#68D391] to-[#9AE6B4]' 
+                : 'bg-linear-to-r from-[#4299E1] to-[#63B3ED]'
             }`}>
             </div> */}
             <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight transition-all duration-500 ${
@@ -65,8 +65,8 @@ const Landing = () => {
               Transform Your
               <span className={`block bg-clip-text text-transparent transition-all duration-500 mt-2 ${
                 isToggled 
-                  ? 'bg-gradient-to-r from-[#00d4aa] via-[#62dafb] to-[#00d4aa]' 
-                  : 'bg-gradient-to-r from-[#0891b2] via-[#06b6d4] to-[#0891b2]'
+                  ? 'bg-linear-to-r from-[#00d4aa] via-[#62dafb] to-[#00d4aa]' 
+                  : 'bg-linear-to-r from-[#0891b2] via-[#06b6d4] to-[#0891b2]'
               }`}>
                 Student Journey
               </span>
@@ -82,8 +82,8 @@ const Landing = () => {
                 onClick={() => navigate('/signup')}
                 className={`text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-bold transition-all duration-300 shadow-2xl text-base sm:text-lg ${
                   isToggled 
-                    ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                    : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+                    ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
+                    : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
                 }`}
               >
                 Start Your Journey
@@ -185,8 +185,8 @@ const Landing = () => {
             }`}>
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${
                 isToggled 
-                  ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' 
-                  : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+                  ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' 
+                  : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
               }`}>
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -207,8 +207,8 @@ const Landing = () => {
             }`}>
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${
                 isToggled 
-                  ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' 
-                  : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+                  ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' 
+                  : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
               }`}>
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -229,8 +229,8 @@ const Landing = () => {
             }`}>
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${
                 isToggled 
-                  ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' 
-                  : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+                  ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' 
+                  : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
               }`}>
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -534,8 +534,8 @@ const Landing = () => {
               </ul>
               <button className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-300 ${
                 isToggled 
-                  ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                  : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+                  ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
+                  : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
               }`}>
                 Start Pro Trial
               </button>
@@ -605,8 +605,8 @@ const Landing = () => {
                 onClick={() => navigate('/signup')}
                 className={`text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-lg text-lg ${
                   isToggled 
-                    ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                    : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+                    ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
+                    : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
                 }`}
               >
                 Start Free Today

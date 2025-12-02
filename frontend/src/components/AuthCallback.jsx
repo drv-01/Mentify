@@ -1,38 +1,57 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const AuthCallback = ({ setIsAuthenticated }) => {
   const navigate = useNavigate()
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const handleOAuthCallback = () => {
       try {
         const urlParams = new URLSearchParams(window.location.search)
         const authParam = urlParams.get('auth')
-        const error = urlParams.get('error')
+        const errorParam = urlParams.get('error')
 
-        if (error) {
-          console.error('OAuth Error:', error)
-          navigate(`/login?error=${error}`)
+        console.log('Auth callback params:', { auth: !!authParam, error: errorParam })
+
+        if (errorParam) {
+          console.error('OAuth Error:', errorParam)
+          setError(`Authentication failed: ${errorParam}`)
+          setTimeout(() => navigate(`/login?error=${errorParam}`), 2000)
           return
         }
 
         if (authParam) {
-          const authData = JSON.parse(atob(authParam))
-          const { token, user, isNewUser } = authData
+          try {
+            const authData = JSON.parse(atob(authParam))
+            const { token, user, isNewUser } = authData
 
-          localStorage.setItem('token', token)
-          localStorage.setItem('user', JSON.stringify(user))
-          localStorage.setItem('isNewUser', isNewUser.toString())
-          
-          setIsAuthenticated(true)
-          navigate('/dashboard')
+            console.log('Auth data received:', { token: !!token, user: !!user, isNewUser })
+
+            if (!token || !user) {
+              throw new Error('Invalid auth data')
+            }
+
+            localStorage.setItem('token', token)
+            localStorage.setItem('user', JSON.stringify(user))
+            localStorage.setItem('isNewUser', isNewUser.toString())
+            
+            setIsAuthenticated(true)
+            navigate('/dashboard')
+          } catch (parseError) {
+            console.error('Parse error:', parseError)
+            setError('Failed to process authentication data')
+            setTimeout(() => navigate('/login?error=oauth_parse_error'), 2000)
+          }
         } else {
-          navigate('/login?error=oauth_no_data')
+          console.error('No auth data received')
+          setError('No authentication data received')
+          setTimeout(() => navigate('/login?error=oauth_no_data'), 2000)
         }
       } catch (error) {
         console.error('Auth callback error:', error)
-        navigate('/login?error=oauth_parse_error')
+        setError('Authentication callback failed')
+        setTimeout(() => navigate('/login?error=oauth_parse_error'), 2000)
       }
     }
 
@@ -40,10 +59,20 @@ const AuthCallback = ({ setIsAuthenticated }) => {
   }, [navigate, setIsAuthenticated])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0891b2] mx-auto mb-4"></div>
-        <p className="text-[#2c5282] font-medium">Completing authentication...</p>
+        {error ? (
+          <>
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <p className="text-red-600 font-medium mb-2">{error}</p>
+            <p className="text-[#2c5282] text-sm">Redirecting to login...</p>
+          </>
+        ) : (
+          <>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0891b2] mx-auto mb-4"></div>
+            <p className="text-[#2c5282] font-medium">Completing authentication...</p>
+          </>
+        )}
       </div>
     </div>
   )

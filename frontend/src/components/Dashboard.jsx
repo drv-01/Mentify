@@ -157,8 +157,8 @@ const Dashboard = ({ setIsAuthenticated }) => {
   return (
     <div className={`min-h-screen transition-all duration-700 ${
       isToggled 
-        ? 'bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
-        : 'bg-gradient-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
+        ? 'bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
+        : 'bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
     }`}>
       {/* Navigation */}
       <nav className={`backdrop-blur-md shadow-sm border-b transition-all duration-500 ${
@@ -170,7 +170,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-3">
-                <div className={`flex items-center justify-center w-12 h-12 bg-gradient-to-br rounded-2xl shadow-lg transition-all duration-500 ${
+                <div className={`flex items-center justify-center w-12 h-12 bg-linear-to-br rounded-2xl shadow-lg transition-all duration-500 ${
                   isToggled 
                     ? 'from-[#00d4aa] to-[#62dafb]' 
                     : 'from-[#0891b2] to-[#06b6d4]'
@@ -183,8 +183,8 @@ const Dashboard = ({ setIsAuthenticated }) => {
                   onClick={() => navigate('/')}
                   className={`text-3xl font-semibold bg-clip-text text-transparent tracking-wider transition-all duration-500 hover:opacity-80 ${
                     isToggled 
-                      ? 'bg-gradient-to-r from-[#62dafb] via-[#00d4aa] to-[#62dafb]' 
-                      : 'bg-gradient-to-r from-[#0891b2] via-[#06b6d4] to-[#0891b2]'
+                      ? 'bg-linear-to-r from-[#62dafb] via-[#00d4aa] to-[#62dafb]' 
+                      : 'bg-linear-to-r from-[#0891b2] via-[#06b6d4] to-[#0891b2]'
                   }`}
                 >
                   Mentify
@@ -234,7 +234,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
                     }`}
                   >
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white ${
-                      isToggled ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+                      isToggled ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
                     }`}>
                       {user.name.charAt(0).toUpperCase()}
                     </div>
@@ -253,8 +253,8 @@ const Dashboard = ({ setIsAuthenticated }) => {
                     onClick={handleLogout}
                     className={`text-white px-4 py-2 rounded-full font-medium shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 ${
                       isToggled 
-                        ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                        : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+                        ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
+                        : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
                     }`}
                   >
                     Logout
@@ -279,7 +279,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
           </div>
           <div className="relative z-10 text-center py-16">
             <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 text-2xl font-bold text-white shadow-lg ${
-              isToggled ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+              isToggled ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
             }`}>
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
@@ -397,7 +397,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
                 alt="Students studying" 
                 className="w-full h-32 object-cover"
               />
-              <div className={`absolute inset-0 bg-gradient-to-t ${
+              <div className={`absolute inset-0 bg-linear-to-t ${
                 isToggled ? 'from-[#1a1a2e]/80 to-transparent' : 'from-[#2c5282]/80 to-transparent'
               }`}></div>
               <div className="absolute bottom-2 left-2 text-white text-sm font-medium">Study Groups</div>
@@ -408,7 +408,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
                 alt="Academic achievement" 
                 className="w-full h-32 object-cover"
               />
-              <div className={`absolute inset-0 bg-gradient-to-t ${
+              <div className={`absolute inset-0 bg-linear-to-t ${
                 isToggled ? 'from-[#1a1a2e]/80 to-transparent' : 'from-[#2c5282]/80 to-transparent'
               }`}></div>
               <div className="absolute bottom-2 left-2 text-white text-sm font-medium">Academic Excellence</div>
@@ -419,7 +419,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
                 alt="Graduation success" 
                 className="w-full h-32 object-cover"
               />
-              <div className={`absolute inset-0 bg-gradient-to-t ${
+              <div className={`absolute inset-0 bg-linear-to-t ${
                 isToggled ? 'from-[#1a1a2e]/80 to-transparent' : 'from-[#2c5282]/80 to-transparent'
               }`}></div>
               <div className="absolute bottom-2 left-2 text-white text-sm font-medium">Career Success</div>

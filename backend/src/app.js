@@ -6,7 +6,7 @@ const authRoutes = require("./routes/authRouts.js")
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173', 'https://mentifyapp.vercel.app'];
+// const allowedOrigins = ['http://localhost:5173', 'https://mentifyapp.vercel.app'];
 
 
 app.use(cors({

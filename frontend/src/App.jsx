@@ -6,6 +6,7 @@ import Signup from './components/Signup'
 import Dashboard from './components/Dashboard'
 import Profile from './components/Profile'
 import AuthCallback from './components/AuthCallback'
+import ForgotPassword from './components/ForgotPassword'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -38,6 +39,10 @@ function App() {
           <Route 
             path="/auth/callback" 
             element={<AuthCallback setIsAuthenticated={setIsAuthenticated} />} 
+          />
+          <Route 
+            path="/forgot-password" 
+            element={<ForgotPassword />} 
           />
           <Route path="/" element={<Landing />} />
           <Route path="/home" element={<Landing />} />

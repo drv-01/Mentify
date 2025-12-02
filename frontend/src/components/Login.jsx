@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 const Login = ({ setIsAuthenticated }) => {
   const [formData, setFormData] = useState({ email: '', password: '' })
@@ -16,8 +17,18 @@ const Login = ({ setIsAuthenticated }) => {
     const urlParams = new URLSearchParams(window.location.search)
     const oauthError = urlParams.get('error')
     if (oauthError) {
-      console.log('OAuth Error:', oauthError)
-      setError('Google authentication failed. Please try again.')
+      const errorMessages = {
+        oauth_denied: 'Google authentication was cancelled.',
+        oauth_no_code: 'Google authentication failed - no authorization code received.',
+        oauth_config_error: 'Google authentication is not properly configured.',
+        oauth_server_error: 'Google authentication server error. Please try again.',
+        oauth_parse_error: 'Failed to process Google authentication data.',
+        oauth_no_data: 'No authentication data received from Google.'
+      }
+      setError(errorMessages[oauthError] || 'Google authentication failed. Please try again.')
+      
+      // Clear the error from URL after showing it
+      window.history.replaceState({}, document.title, window.location.pathname)
     }
   }, [])
 
@@ -27,10 +38,7 @@ const Login = ({ setIsAuthenticated }) => {
     setError('')
 
     try {
-      const API_URL = import.meta.env.MODE === 'production' 
-        ? import.meta.env.VITE_PROD_API_URL 
-        : import.meta.env.VITE_API_URL
-      const response = await axios.post(`${API_URL}/api/auth/login`, formData)
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData)
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify({ name: response.data.name }))
       localStorage.setItem('isNewUser', 'false')
@@ -45,8 +53,8 @@ const Login = ({ setIsAuthenticated }) => {
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-all duration-700 ${
       isToggled 
-        ? 'bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
-        : 'bg-gradient-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
+        ? 'bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
+        : 'bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
     }`}>
       <div className={`backdrop-blur-sm p-8 rounded-2xl shadow-2xl w-full max-w-md border transition-all duration-500 ${
         isToggled 
@@ -56,8 +64,8 @@ const Login = ({ setIsAuthenticated }) => {
         <div className="text-center mb-8">
           <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 transition-all duration-500 ${
             isToggled 
-              ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' 
-              : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+              ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' 
+              : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
           }`}>
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -65,8 +73,8 @@ const Login = ({ setIsAuthenticated }) => {
           </div>
           <h1 className={`text-4xl font-bold tracking-tight bg-clip-text text-transparent mb-2 transition-all duration-500 ${
             isToggled 
-              ? 'bg-gradient-to-r from-[#62dafb] to-[#00d4aa]' 
-              : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+              ? 'bg-linear-to-r from-[#62dafb] to-[#00d4aa]' 
+              : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
           }`}>Mentify</h1>
           <p className={`font-medium tracking-wide transition-all duration-500 ${
             isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
@@ -121,8 +129,8 @@ const Login = ({ setIsAuthenticated }) => {
             disabled={loading}
             className={`w-full text-white py-3 px-4 rounded-xl font-semibold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg ${
               isToggled 
-                ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+                ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
+                : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
             }`}
           >
             {loading ? (
@@ -155,10 +163,8 @@ const Login = ({ setIsAuthenticated }) => {
 
           <button
             onClick={() => {
-              const API_URL = import.meta.env.MODE === 'production' 
-                ? import.meta.env.VITE_PROD_API_URL 
-                : import.meta.env.VITE_API_URL
-              window.location.href = `${API_URL}/api/auth/google`
+              console.log('Initiating Google Auth, API URL:', API_BASE_URL)
+              window.location.href = `${API_BASE_URL}/api/auth/google`
             }}
             className={`mt-4 w-full flex items-center justify-center px-4 py-3 border rounded-xl font-semibold tracking-wide transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
               isToggled 
@@ -176,7 +182,17 @@ const Login = ({ setIsAuthenticated }) => {
           </button>
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 text-center">
+          <Link
+            to="/forgot-password"
+            className={`text-sm font-semibold tracking-wide transition-colors block mb-4 ${
+              isToggled 
+                ? 'text-[#00d4aa] hover:text-[#00d4aa]/80' 
+                : 'text-[#0891b2] hover:text-[#0891b2]/80'
+            }`}
+          >
+            Forgot Password?
+          </Link>
           <p className={`font-medium tracking-wide transition-all duration-300 ${
             isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
           }`}>

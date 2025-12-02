@@ -15,7 +15,7 @@ const Navbar = ({ isToggled, toggleTheme, isAuthenticated }) => {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-3">
-              <div className={`flex items-center justify-center w-12 h-12 bg-gradient-to-br rounded-2xl shadow-lg transition-all duration-500 ${
+              <div className={`flex items-center justify-center w-12 h-12 bg-linear-to-br rounded-2xl shadow-lg transition-all duration-500 ${
                 isToggled 
                   ? 'from-[#00d4aa] to-[#62dafb]' 
                   : 'from-[#0891b2] to-[#06b6d4]'
@@ -26,8 +26,8 @@ const Navbar = ({ isToggled, toggleTheme, isAuthenticated }) => {
               </div>
               <h1 className={`text-2xl sm:text-3xl font-semibold bg-clip-text text-transparent tracking-wider transition-all duration-500 ${
                 isToggled 
-                  ? 'bg-gradient-to-r from-[#62dafb] via-[#00d4aa] to-[#62dafb]' 
-                  : 'bg-gradient-to-r from-[#0891b2] via-[#06b6d4] to-[#0891b2]'
+                  ? 'bg-linear-to-r from-[#62dafb] via-[#00d4aa] to-[#62dafb]' 
+                  : 'bg-linear-to-r from-[#0891b2] via-[#06b6d4] to-[#0891b2]'
               }`}>Mentify</h1>
             </div>
             <button 
@@ -105,8 +105,8 @@ const Navbar = ({ isToggled, toggleTheme, isAuthenticated }) => {
                   onClick={() => navigate('/signup')}
                   className={`text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm sm:text-base ${
                     isToggled 
-                      ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                      : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+                      ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
+                      : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
                   }`}
                 >
                   🚀 Start Learning

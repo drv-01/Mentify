@@ -50,8 +50,8 @@ const Profile = () => {
   return (
     <div className={`min-h-screen transition-all duration-700 ${
       isToggled 
-        ? 'bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
-        : 'bg-gradient-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
+        ? 'bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
+        : 'bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
     }`}>
       <div className="pt-20 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,7 +79,7 @@ const Profile = () => {
           }`}>
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-8">
               <div className={`w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white ${
-                isToggled ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4]'
+                isToggled ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
               }`}>
                 {formData.name.charAt(0).toUpperCase() || 'U'}
               </div>
@@ -96,8 +96,8 @@ const Profile = () => {
                   onClick={() => setIsEditing(!isEditing)}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
                     isToggled 
-                      ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb] text-white' 
-                      : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2] text-white'
+                      ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb] text-white' 
+                      : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2] text-white'
                   }`}
                 >
                   {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -202,8 +202,8 @@ const Profile = () => {
                   disabled={loading}
                   className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                     isToggled 
-                      ? 'bg-gradient-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb] text-white' 
-                      : 'bg-gradient-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2] text-white'
+                      ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb] text-white' 
+                      : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2] text-white'
                   } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? 'Saving...' : 'Save Changes'}
