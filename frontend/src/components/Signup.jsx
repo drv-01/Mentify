@@ -51,47 +51,39 @@ const Signup = ({ setIsAuthenticated }) => {
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-all duration-300 ${
-      isToggled 
-        ? 'bg-gray-50' 
-        : 'bg-gray-50'
+      isToggled ? 'bg-gray-900' : 'bg-gray-50'
     }`}>
-      <div className={`backdrop-blur-none p-8 rounded-lg shadow-none w-full max-w-md border transition-all duration-300 ${
-        isToggled 
-          ? 'bg-gray-900 border-gray-700' 
-          : 'bg-white border-gray-200'
+      <div className={`p-8 rounded-lg w-full max-w-md border transition-all duration-300 ${
+        isToggled ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
       }`}>
         <div className="text-center mb-8">
           <div className={`inline-flex items-center justify-center w-16 h-16 rounded-lg mb-4 transition-all duration-300 ${
-            isToggled 
-              ? 'bg-gray-900' 
-              : 'bg-gray-900'
+            isToggled ? 'bg-gray-800' : 'bg-gray-900'
           }`}>
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <h1 className={`text-3xl font-bold text-gray-700 mb-2 transition-all duration-300 ${
-            isToggled 
-              ? 'bg-gray-900' 
-              : 'bg-gray-900'
+          <h1 className={`text-3xl font-bold mb-2 transition-all duration-300 ${
+            isToggled ? 'text-white' : 'text-gray-900'
           }`}>Mentify</h1>
-          <p className={`font-medium transition-all duration-300 ${
-            isToggled ? 'text-gray-300' : 'text-gray-700'
+          <p className={`transition-all duration-300 ${
+            isToggled ? 'text-gray-400' : 'text-gray-600'
           }`}>Start your success journey today</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <label className={`block text-sm font-semibold transition-all duration-300 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
+              isToggled ? 'text-gray-300' : 'text-gray-900'
             }`}>Full Name</label>
             <input
               type="text"
               required
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
-                  ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                  : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                  ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                  : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
               placeholder="Enter your full name"
               value={formData.name}
@@ -101,15 +93,15 @@ const Signup = ({ setIsAuthenticated }) => {
 
           <div className="space-y-2">
             <label className={`block text-sm font-semibold transition-all duration-300 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
+              isToggled ? 'text-gray-300' : 'text-gray-900'
             }`}>Email Address</label>
             <input
               type="email"
               required
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
-                  ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                  : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                  ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                  : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
               placeholder="Enter your email"
               value={formData.email}
@@ -119,16 +111,16 @@ const Signup = ({ setIsAuthenticated }) => {
 
           <div className="space-y-2">
             <label className={`block text-sm font-semibold transition-all duration-300 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
+              isToggled ? 'text-gray-300' : 'text-gray-900'
             }`}>Password</label>
             <input
               type="password"
               required
               minLength="6"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
-                  ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                  : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                  ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                  : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
               placeholder="Create a password (min. 6 characters)"
               value={formData.password}
@@ -138,15 +130,15 @@ const Signup = ({ setIsAuthenticated }) => {
 
           <div className="space-y-2">
             <label className={`block text-sm font-semibold transition-all duration-300 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
+              isToggled ? 'text-gray-300' : 'text-gray-900'
             }`}>Confirm Password</label>
             <input
               type="password"
               required
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
-                  ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                  : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                  ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                  : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
               placeholder="Confirm your password"
               value={formData.confirmPassword}
@@ -163,10 +155,8 @@ const Signup = ({ setIsAuthenticated }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 transition-all duration-200 shadow-none ${
-              isToggled 
-                ? 'bg-gray-900 hover:bg-gray-800' 
-                : 'bg-gray-900 hover:bg-gray-800'
+            className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 transition-all duration-200 ${
+              isToggled ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-900 hover:bg-gray-800'
             }`}
           >
             {loading ? (
@@ -187,12 +177,12 @@ const Signup = ({ setIsAuthenticated }) => {
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className={`w-full border-t ${
-                isToggled ? 'border-gray-600/30' : 'border-gray-300/30'
+                isToggled ? 'border-gray-700' : 'border-gray-200'
               }`} />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className={`px-2 ${
-                isToggled ? 'bg-gray-900/90 text-gray-300' : 'bg-gray-50/90 text-gray-700'
+                isToggled ? 'bg-gray-900 text-gray-400' : 'bg-white text-gray-600'
               }`}>Or continue with</span>
             </div>
           </div>
@@ -206,8 +196,8 @@ const Signup = ({ setIsAuthenticated }) => {
             disabled={loading}
             className={`mt-4 w-full flex items-center justify-center px-4 py-3 border rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 ${
               isToggled 
-                ? 'border-gray-600/30 bg-gray-800/10 text-gray-300 hover:bg-gray-800/20' 
-                : 'border-gray-300/30 bg-white text-gray-700 hover:bg-gray-50'
+                ? 'border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -221,22 +211,18 @@ const Signup = ({ setIsAuthenticated }) => {
         </div>
 
         <div className="mt-8 text-center">
-          <p className={`font-medium transition-all duration-300 ${
-            isToggled ? 'text-gray-300' : 'text-gray-700'
+          <p className={`transition-all duration-300 ${
+            isToggled ? 'text-gray-400' : 'text-gray-600'
           }`}>
             Already have an account?{' '}
             <Link to="/login" className={`font-semibold transition-colors ${
-              isToggled 
-                ? 'text-[#00d4aa] hover:text-white/80' 
-                : 'text-[#0891b2] hover:text-gray-900/80'
+              isToggled ? 'text-gray-300 hover:text-white' : 'text-gray-900 hover:text-gray-700'
             }`}>
               Sign in
             </Link>
           </p>
         </div>
       </div>
-
-
     </div>
   )
 }

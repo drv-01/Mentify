@@ -162,7 +162,7 @@ const Landing = () => {
                 className="rounded-lg shadow-sm w-full h-96 object-cover"
               />
               <div className={`absolute inset-0 rounded-lg ${
-                isToggled ? 'bg-[#1A2A4F]/20' : 'bg-gray-100'
+                isToggled ? 'bg-gray-900/20' : 'bg-white/10'
               }`}></div>
             </div>
           </div>

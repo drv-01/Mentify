@@ -54,32 +54,24 @@ const ForgotPassword = () => {
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-all duration-300 ${
-      isToggled 
-        ? 'bg-gray-50' 
-        : 'bg-gray-50'
+      isToggled ? 'bg-gray-900' : 'bg-gray-50'
     }`}>
-      <div className={`backdrop-blur-none p-8 rounded-lg shadow-none w-full max-w-md border transition-all duration-300 ${
-        isToggled 
-          ? 'bg-gray-900 border-gray-700' 
-          : 'bg-white border-gray-200'
+      <div className={`p-8 rounded-lg w-full max-w-md border transition-all duration-300 ${
+        isToggled ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
       }`}>
         <div className="text-center mb-8">
           <div className={`inline-flex items-center justify-center w-16 h-16 rounded-lg mb-4 transition-all duration-300 ${
-            isToggled 
-              ? 'bg-gray-900' 
-              : 'bg-gray-900'
+            isToggled ? 'bg-gray-800' : 'bg-gray-900'
           }`}>
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
           </div>
-          <h1 className={`text-3xl font-bold text-gray-700 mb-2 transition-all duration-300 ${
-            isToggled 
-              ? 'bg-gray-900' 
-              : 'bg-gray-900'
+          <h1 className={`text-3xl font-bold mb-2 transition-all duration-300 ${
+            isToggled ? 'text-white' : 'text-gray-900'
           }`}>Reset Password</h1>
-          <p className={`font-medium transition-all duration-300 ${
-            isToggled ? 'text-gray-300' : 'text-gray-700'
+          <p className={`transition-all duration-300 ${
+            isToggled ? 'text-gray-400' : 'text-gray-600'
           }`}>
             {step === 1 && 'Enter your email and new password'}
             {step === 2 && 'Password reset successful!'}
@@ -90,15 +82,15 @@ const ForgotPassword = () => {
           <form onSubmit={handleResetPassword} className="space-y-6">
             <div className="space-y-2">
               <label className={`block text-sm font-semibold transition-all duration-300 ${
-                isToggled ? 'text-gray-300' : 'text-gray-700'
+                isToggled ? 'text-gray-300' : 'text-gray-900'
               }`}>Email Address</label>
               <input
                 type="email"
                 required
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                   isToggled 
-                    ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                    : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                    ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                    : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
                 }`}
                 placeholder="Enter your email"
                 value={email}
@@ -107,16 +99,16 @@ const ForgotPassword = () => {
             </div>
             <div className="space-y-2">
               <label className={`block text-sm font-semibold transition-all duration-300 ${
-                isToggled ? 'text-gray-300' : 'text-gray-700'
+                isToggled ? 'text-gray-300' : 'text-gray-900'
               }`}>New Password</label>
               <input
                 type="password"
                 required
                 minLength="6"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                   isToggled 
-                    ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                    : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                    ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                    : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
                 }`}
                 placeholder="Enter new password"
                 value={newPassword}
@@ -126,15 +118,15 @@ const ForgotPassword = () => {
 
             <div className="space-y-2">
               <label className={`block text-sm font-semibold transition-all duration-300 ${
-                isToggled ? 'text-gray-300' : 'text-gray-700'
+                isToggled ? 'text-gray-300' : 'text-gray-900'
               }`}>Confirm New Password</label>
               <input
                 type="password"
                 required
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-gray-400 transition-all duration-200 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                   isToggled 
-                    ? 'border-gray-600/30 focus:ring-gray-400 bg-gray-800/20 text-gray-300 placeholder-gray-400' 
-                    : 'border-gray-300/30 focus:ring-gray-400 bg-gray-100 text-gray-900 placeholder-gray-500'
+                    ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                    : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
                 }`}
                 placeholder="Confirm new password"
                 value={confirmPassword}
@@ -148,19 +140,11 @@ const ForgotPassword = () => {
               </div>
             )}
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
             <button
               type="submit"
               disabled={loading}
-              className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 transition-all duration-200 shadow-none ${
-                isToggled 
-                  ? 'bg-gray-900 hover:bg-gray-800' 
-                  : 'bg-gray-900 hover:bg-gray-800'
+              className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 transition-all duration-200 ${
+                isToggled ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-900 hover:bg-gray-800'
               }`}
             >
               {loading ? 'Resetting...' : 'Reset Password'}
@@ -175,10 +159,8 @@ const ForgotPassword = () => {
             </div>
             <Link
               to="/login"
-              className={`inline-block w-full text-center text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 shadow-none ${
-                isToggled 
-                  ? 'bg-gray-900 hover:bg-gray-800' 
-                  : 'bg-gray-900 hover:bg-gray-800'
+              className={`inline-block w-full text-center text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
+                isToggled ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-900 hover:bg-gray-800'
               }`}
             >
               Go to Login
@@ -190,17 +172,13 @@ const ForgotPassword = () => {
           <Link
             to="/login"
             className={`font-semibold transition-colors ${
-              isToggled 
-                ? 'text-[#00d4aa] hover:text-white/80' 
-                : 'text-[#0891b2] hover:text-gray-900/80'
+              isToggled ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             Back to Login
           </Link>
         </div>
       </div>
-
-
     </div>
   )
 }
