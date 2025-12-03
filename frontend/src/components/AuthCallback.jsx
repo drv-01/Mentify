@@ -59,18 +59,18 @@ const AuthCallback = ({ setIsAuthenticated }) => {
   }, [navigate, setIsAuthenticated])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="text-center">
         {error ? (
           <>
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
             <p className="text-red-600 font-medium mb-2">{error}</p>
-            <p className="text-[#2c5282] text-sm">Redirecting to login...</p>
+            <p className="text-gray-700 text-sm">Redirecting to login...</p>
           </>
         ) : (
           <>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0891b2] mx-auto mb-4"></div>
-            <p className="text-[#2c5282] font-medium">Completing authentication...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-300 mx-auto mb-4"></div>
+            <p className="text-gray-700 font-medium">Completing authentication...</p>
           </>
         )}
       </div>

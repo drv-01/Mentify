@@ -34,6 +34,7 @@ const googleAuth = (req, res) => {
     
     if (!process.env.GOOGLE_CLIENT_ID) {
       console.error('GOOGLE_CLIENT_ID not configured');
+      console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('GOOGLE')));
       return res.redirect(`${getFrontendUrl()}/login?error=oauth_config_error`);
     }
 

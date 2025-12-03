@@ -48,10 +48,10 @@ const Profile = () => {
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${
+    <div className={`min-h-screen transition-all duration-300 ${
       isToggled 
-        ? 'bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
-        : 'bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
+        ? 'bg-gray-50' 
+        : 'bg-gray-50'
     }`}>
       <div className="pt-20 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +59,7 @@ const Profile = () => {
             <button
               onClick={() => navigate('/dashboard')}
               className={`flex items-center space-x-2 mb-4 transition-colors ${
-                isToggled ? 'text-[#62dafb] hover:text-[#00d4aa]' : 'text-[#0891b2] hover:text-[#06b6d4]'
+                isToggled ? 'text-gray-300 hover:text-white' : 'text-[#0891b2] hover:text-[#06b6d4]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,27 +68,27 @@ const Profile = () => {
               <span>Back to Dashboard</span>
             </button>
             <h1 className={`text-3xl font-bold ${
-              isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+              isToggled ? 'text-gray-300' : 'text-gray-700'
             }`}>Profile Settings</h1>
           </div>
 
-          <div className={`backdrop-blur-sm p-8 rounded-3xl shadow-2xl border ${
+          <div className={`backdrop-blur-none p-8 rounded-lg shadow-sm border ${
             isToggled 
-              ? 'bg-[#1a1a2e]/90 border-[#62dafb]/30' 
-              : 'bg-[#e8f4fd]/90 border-[#0891b2]/20'
+              ? 'bg-gray-900/90 border-gray-600/30' 
+              : 'bg-gray-50/90 border-gray-300/20'
           }`}>
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-8">
               <div className={`w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white ${
-                isToggled ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
+                isToggled ? 'bg-gray-900' : 'bg-gray-900'
               }`}>
                 {formData.name.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="text-center sm:text-left">
                 <h2 className={`text-2xl font-bold ${
-                  isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+                  isToggled ? 'text-gray-300' : 'text-gray-700'
                 }`}>{formData.name || 'User'}</h2>
                 <p className={`${
-                  isToggled ? 'text-[#62dafb]/70' : 'text-[#2c5282]/70'
+                  isToggled ? 'text-gray-300/70' : 'text-gray-700/70'
                 }`}>{formData.email}</p>
               </div>
               <div className="sm:ml-auto">
@@ -96,8 +96,8 @@ const Profile = () => {
                   onClick={() => setIsEditing(!isEditing)}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
                     isToggled 
-                      ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb] text-white' 
-                      : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2] text-white'
+                      ? 'bg-gray-900 hover:bg-gray-700 text-white' 
+                      : 'bg-gray-900 hover:bg-gray-700 text-white'
                   }`}
                 >
                   {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -108,15 +108,15 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className={`block text-sm font-semibold ${
-                  isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+                  isToggled ? 'text-gray-300' : 'text-gray-700'
                 }`}>Full Name</label>
                 <input
                   type="text"
                   disabled={!isEditing}
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
                     isToggled 
-                      ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#1a1a2e] text-[#62dafb] placeholder-[#62dafb]/60' 
-                      : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                      ? 'border-gray-600/30 focus:ring-gray-500 bg-gray-900 text-gray-300 placeholder-gray-400' 
+                      : 'border-gray-300/30 focus:ring-gray-500 bg-gray-200/30 text-gray-700 placeholder-gray-500'
                   } ${!isEditing ? 'opacity-60' : ''}`}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -125,15 +125,15 @@ const Profile = () => {
 
               <div className="space-y-2">
                 <label className={`block text-sm font-semibold ${
-                  isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+                  isToggled ? 'text-gray-300' : 'text-gray-700'
                 }`}>Email Address</label>
                 <input
                   type="email"
                   disabled={!isEditing}
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
                     isToggled 
-                      ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#1a1a2e] text-[#62dafb] placeholder-[#62dafb]/60' 
-                      : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                      ? 'border-gray-600/30 focus:ring-gray-500 bg-gray-900 text-gray-300 placeholder-gray-400' 
+                      : 'border-gray-300/30 focus:ring-gray-500 bg-gray-200/30 text-gray-700 placeholder-gray-500'
                   } ${!isEditing ? 'opacity-60' : ''}`}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -142,15 +142,15 @@ const Profile = () => {
 
               <div className="space-y-2">
                 <label className={`block text-sm font-semibold ${
-                  isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+                  isToggled ? 'text-gray-300' : 'text-gray-700'
                 }`}>Phone Number</label>
                 <input
                   type="tel"
                   disabled={!isEditing}
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
                     isToggled 
-                      ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#1a1a2e] text-[#62dafb] placeholder-[#62dafb]/60' 
-                      : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                      ? 'border-gray-600/30 focus:ring-gray-500 bg-gray-900 text-gray-300 placeholder-gray-400' 
+                      : 'border-gray-300/30 focus:ring-gray-500 bg-gray-200/30 text-gray-700 placeholder-gray-500'
                   } ${!isEditing ? 'opacity-60' : ''}`}
                   placeholder="Enter phone number"
                   value={formData.phone}
@@ -160,15 +160,15 @@ const Profile = () => {
 
               <div className="space-y-2">
                 <label className={`block text-sm font-semibold ${
-                  isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+                  isToggled ? 'text-gray-300' : 'text-gray-700'
                 }`}>Location</label>
                 <input
                   type="text"
                   disabled={!isEditing}
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
                     isToggled 
-                      ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#1a1a2e] text-[#62dafb] placeholder-[#62dafb]/60' 
-                      : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                      ? 'border-gray-600/30 focus:ring-gray-500 bg-gray-900 text-gray-300 placeholder-gray-400' 
+                      : 'border-gray-300/30 focus:ring-gray-500 bg-gray-200/30 text-gray-700 placeholder-gray-500'
                   } ${!isEditing ? 'opacity-60' : ''}`}
                   placeholder="Enter your location"
                   value={formData.location}
@@ -178,15 +178,15 @@ const Profile = () => {
 
               <div className="space-y-2 md:col-span-2">
                 <label className={`block text-sm font-semibold ${
-                  isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+                  isToggled ? 'text-gray-300' : 'text-gray-700'
                 }`}>Bio</label>
                 <textarea
                   disabled={!isEditing}
                   rows={4}
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 resize-none ${
                     isToggled 
-                      ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#1a1a2e] text-[#62dafb] placeholder-[#62dafb]/60' 
-                      : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                      ? 'border-gray-600/30 focus:ring-gray-500 bg-gray-900 text-gray-300 placeholder-gray-400' 
+                      : 'border-gray-300/30 focus:ring-gray-500 bg-gray-200/30 text-gray-700 placeholder-gray-500'
                   } ${!isEditing ? 'opacity-60' : ''}`}
                   placeholder="Tell us about yourself..."
                   value={formData.bio}
@@ -202,8 +202,8 @@ const Profile = () => {
                   disabled={loading}
                   className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                     isToggled 
-                      ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb] text-white' 
-                      : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2] text-white'
+                      ? 'bg-gray-900 hover:bg-gray-700 text-white' 
+                      : 'bg-gray-900 hover:bg-gray-700 text-white'
                   } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? 'Saving...' : 'Save Changes'}

@@ -51,48 +51,40 @@ const Login = ({ setIsAuthenticated }) => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 transition-all duration-700 ${
-      isToggled 
-        ? 'bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]' 
-        : 'bg-linear-to-br from-[#e8f4fd] via-[#d1ecf1] to-[#bee9e8]'
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-all duration-300 ${
+      isToggled ? 'bg-gray-900' : 'bg-gray-50'
     }`}>
-      <div className={`backdrop-blur-sm p-8 rounded-2xl shadow-2xl w-full max-w-md border transition-all duration-500 ${
-        isToggled 
-          ? 'bg-[#1a1a2e]/90 border-[#62dafb]/30' 
-          : 'bg-[#e8f4fd]/90 border-[#0891b2]/20'
+      <div className={`p-8 rounded-lg w-full max-w-md border transition-all duration-300 ${
+        isToggled ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
       }`}>
         <div className="text-center mb-8">
-          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 transition-all duration-500 ${
-            isToggled 
-              ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb]' 
-              : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
+          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-lg mb-4 transition-all duration-300 ${
+            isToggled ? 'bg-gray-800' : 'bg-gray-900'
           }`}>
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <h1 className={`text-4xl font-bold tracking-tight bg-clip-text text-transparent mb-2 transition-all duration-500 ${
-            isToggled 
-              ? 'bg-linear-to-r from-[#62dafb] to-[#00d4aa]' 
-              : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4]'
+          <h1 className={`text-3xl font-bold mb-2 transition-all duration-300 ${
+            isToggled ? 'text-white' : 'text-gray-900'
           }`}>Mentify</h1>
-          <p className={`font-medium tracking-wide transition-all duration-500 ${
-            isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+          <p className={`transition-all duration-300 ${
+            isToggled ? 'text-gray-400' : 'text-gray-600'
           }`}>Welcome back to your success journey</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className={`block text-sm font-semibold transition-all duration-300 ${
-              isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+              isToggled ? 'text-gray-300' : 'text-gray-900'
             }`}>Email Address</label>
             <input
               type="email"
               required
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
-                  ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#00d4aa]/20 text-[#62dafb] placeholder-[#62dafb]/60' 
-                  : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                  ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                  : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
               placeholder="Enter your email"
               value={formData.email}
@@ -102,15 +94,15 @@ const Login = ({ setIsAuthenticated }) => {
 
           <div className="space-y-2">
             <label className={`block text-sm font-semibold transition-all duration-300 ${
-              isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+              isToggled ? 'text-gray-300' : 'text-gray-900'
             }`}>Password</label>
             <input
               type="password"
               required
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
-                  ? 'border-[#62dafb]/30 focus:ring-[#62dafb] bg-[#00d4aa]/20 text-[#62dafb] placeholder-[#62dafb]/60' 
-                  : 'border-[#0891b2]/30 focus:ring-[#0891b2] bg-[#bee9e8]/30 text-[#2c5282] placeholder-[#2c5282]/70'
+                  ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
+                  : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
               placeholder="Enter your password"
               value={formData.password}
@@ -119,7 +111,7 @@ const Login = ({ setIsAuthenticated }) => {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -127,10 +119,8 @@ const Login = ({ setIsAuthenticated }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white py-3 px-4 rounded-xl font-semibold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg ${
-              isToggled 
-                ? 'bg-linear-to-r from-[#00d4aa] to-[#62dafb] hover:from-[#00c4a0] hover:to-[#52c9eb]' 
-                : 'bg-linear-to-r from-[#0891b2] to-[#06b6d4] hover:from-[#0e7490] hover:to-[#0891b2]'
+            className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 transition-all duration-200 ${
+              isToggled ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-900 hover:bg-gray-800'
             }`}
           >
             {loading ? (
@@ -151,12 +141,12 @@ const Login = ({ setIsAuthenticated }) => {
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className={`w-full border-t ${
-                isToggled ? 'border-[#62dafb]/30' : 'border-[#0891b2]/30'
+                isToggled ? 'border-gray-700' : 'border-gray-200'
               }`} />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className={`px-2 ${
-                isToggled ? 'bg-[#1a1a2e]/90 text-[#62dafb]' : 'bg-[#e8f4fd]/90 text-[#2c5282]'
+                isToggled ? 'bg-gray-900 text-gray-400' : 'bg-white text-gray-600'
               }`}>Or continue with</span>
             </div>
           </div>
@@ -166,10 +156,10 @@ const Login = ({ setIsAuthenticated }) => {
               console.log('Initiating Google Auth, API URL:', API_BASE_URL)
               window.location.href = `${API_BASE_URL}/api/auth/google`
             }}
-            className={`mt-4 w-full flex items-center justify-center px-4 py-3 border rounded-xl font-semibold tracking-wide transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+            className={`mt-4 w-full flex items-center justify-center px-4 py-3 border rounded-lg font-semibold transition-all duration-200 ${
               isToggled 
-                ? 'border-[#62dafb]/30 bg-[#00d4aa]/10 text-[#62dafb] hover:bg-[#00d4aa]/20' 
-                : 'border-[#0891b2]/30 bg-white text-[#2c5282] hover:bg-gray-50'
+                ? 'border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -185,22 +175,18 @@ const Login = ({ setIsAuthenticated }) => {
         <div className="mt-6 text-center">
           <Link
             to="/forgot-password"
-            className={`text-sm font-semibold tracking-wide transition-colors block mb-4 ${
-              isToggled 
-                ? 'text-[#00d4aa] hover:text-[#00d4aa]/80' 
-                : 'text-[#0891b2] hover:text-[#0891b2]/80'
+            className={`text-sm font-semibold transition-colors block mb-4 ${
+              isToggled ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             Forgot Password?
           </Link>
-          <p className={`font-medium tracking-wide transition-all duration-300 ${
-            isToggled ? 'text-[#62dafb]' : 'text-[#2c5282]'
+          <p className={`transition-all duration-300 ${
+            isToggled ? 'text-gray-400' : 'text-gray-600'
           }`}>
             Don't have an account?{' '}
-            <Link to="/signup" className={`font-semibold tracking-wide transition-colors ${
-              isToggled 
-                ? 'text-[#00d4aa] hover:text-[#00d4aa]/80' 
-                : 'text-[#0891b2] hover:text-[#0891b2]/80'
+            <Link to="/signup" className={`font-semibold transition-colors ${
+              isToggled ? 'text-gray-300 hover:text-white' : 'text-gray-900 hover:text-gray-700'
             }`}>
               Sign up
             </Link>
