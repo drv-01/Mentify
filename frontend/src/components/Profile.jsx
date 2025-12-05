@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 import Footer from './Footer'
 
 const Profile = () => {
@@ -18,8 +20,12 @@ const Profile = () => {
 
   useEffect(() => {
     const theme = localStorage.getItem('theme')
-    const userData = JSON.parse(localStorage.getItem('user') || '{}')
     setIsToggled(theme === 'dark')
+    fetchUserProfile()
+  }, [])
+
+  const fetchUserProfile = async () => {
+    const userData = JSON.parse(localStorage.getItem('user') || '{}')
     setUser(userData)
     setFormData({
       name: userData.name || '',
@@ -28,7 +34,7 @@ const Profile = () => {
       phone: userData.phone || '',
       location: userData.location || ''
     })
-  }, [])
+  }
 
   const toggleTheme = () => {
     const newTheme = !isToggled
@@ -38,13 +44,28 @@ const Profile = () => {
 
   const handleSave = async () => {
     setLoading(true)
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token')
+      if (token) {
+        const response = await axios.put(`${API_BASE_URL}/api/profile`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        console.log('Profile saved to database:', response.data)
+      }
       const updatedUser = { ...user, ...formData }
       localStorage.setItem('user', JSON.stringify(updatedUser))
       setUser(updatedUser)
       setIsEditing(false)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      // Still save to localStorage even if DB fails
+      const updatedUser = { ...user, ...formData }
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+      setUser(updatedUser)
+      setIsEditing(false)
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   return (

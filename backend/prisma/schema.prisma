@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,10 +8,176 @@ datasource db {
 }
 
 model Users {
+  id                Int                @id @default(autoincrement())
+  name              String
+  email             String             @unique
+  password          String?
+  bio               String?
+  phone             String?
+  location          String?
+  profileImage      String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  customMentors     CustomMentor[]
+  dietPlan          DietPlan?
+  fitnessProfile    FitnessProfile?
+  mentorConnections MentorConnection[]
+  moodEntries       MoodEntry[]
+  workouts          Workout[]
+  tasks             Task[]
+  chatMessages      ChatMessage[]
+  activities        Activity[]
+}
+
+model MoodEntry {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  mood             String
+  moodLabel        String
+  moodEmoji        String
+  stressLevel      Int
+  trigger          String?
+  note             String?
+  sleepQuality     Int?
+  energyLevel      Int?
+  socialConnection Int?
+  physicalActivity String?
+  mealPattern      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CustomMentor {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  name           String
+  role           String
+  company        String?
+  domain         String?
+  experience     String?
+  specialization String[]
+  availability   String?
+  bio            String?
+  email          String
+  phone          String?
+  linkedin       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MentorConnection {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  mentorId   Int?
+  mentorName String
+  mentorType String   @default("default")
+  status     String   @default("connected")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model FitnessProfile {
   id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  password    String?
+  userId      Int      @unique
+  weight      Float
+  height      Float
+  age         Int
+  selectedDay String   @default("Today")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Workout {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  name         String
+  duration     Int
+  calories     Int
+  type         String
+  icon         String?
+  description  String?
+  instructions String[]
+  date         String
+  completed    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model DietPlan {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  waterIntake Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals       Meal[]
+}
+
+model Meal {
+  id         Int      @id @default(autoincrement())
+  dietPlanId Int
+  name       String
+  calories   Int
+  protein    Int
+  carbs      Int
+  fat        Int
+  type       String
+  consumed   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  dietPlan   DietPlan @relation(fields: [dietPlanId], references: [id], onDelete: Cascade)
+
+  @@index([dietPlanId])
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String
+  isUser    Boolean
+  createdAt DateTime @default(now())
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Activity {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  action    String
+  timestamp String
+  createdAt DateTime @default(now())
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String?
+  priority    String   @default("medium")
+  dueDate     String?
+  category    String   @default("personal")
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

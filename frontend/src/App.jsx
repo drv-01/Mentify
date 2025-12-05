@@ -7,6 +7,12 @@ import Dashboard from './components/Dashboard'
 import Profile from './components/Profile'
 import AuthCallback from './components/AuthCallback'
 import ForgotPassword from './components/ForgotPassword'
+import MoodTracker from './components/MoodTracker'
+import Mentorship from './components/Mentorship'
+import FitnessTracker from './components/FitnessTracker'
+import DietPlanner from './components/DietPlanner'
+import Scheduler from './components/Scheduler'
+import AiChatbot from './components/AiChatbot'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -35,6 +41,30 @@ function App() {
           <Route 
             path="/profile" 
             element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/mood-tracker" 
+            element={isAuthenticated ? <MoodTracker /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/mentorship" 
+            element={isAuthenticated ? <Mentorship /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/fitness-tracker" 
+            element={isAuthenticated ? <FitnessTracker /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/diet-planner" 
+            element={isAuthenticated ? <DietPlanner /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/scheduler" 
+            element={isAuthenticated ? <Scheduler /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/ai-chatbot" 
+            element={isAuthenticated ? <AiChatbot /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/auth/callback" 
