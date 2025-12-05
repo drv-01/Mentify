@@ -46,18 +46,21 @@ const Profile = () => {
     setLoading(true)
     try {
       const token = localStorage.getItem('token')
+      console.log('API URL:', API_BASE_URL)
+      console.log('Saving profile data:', formData)
+      
       if (token) {
         const response = await axios.put(`${API_BASE_URL}/api/profile`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         })
-        console.log('Profile saved to database:', response.data)
+        console.log('✅ Profile saved to database:', response.data)
       }
       const updatedUser = { ...user, ...formData }
       localStorage.setItem('user', JSON.stringify(updatedUser))
       setUser(updatedUser)
       setIsEditing(false)
     } catch (error) {
-      console.error('Error updating profile:', error)
+      console.error('❌ Error updating profile:', error.response?.data || error.message)
       // Still save to localStorage even if DB fails
       const updatedUser = { ...user, ...formData }
       localStorage.setItem('user', JSON.stringify(updatedUser))

@@ -36,7 +36,7 @@ const FitnessTracker = () => {
   const fetchFitnessProfile = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/fitness/profile`, {
+      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/fitness/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (response.data) {
@@ -50,7 +50,7 @@ const FitnessTracker = () => {
   const fetchWorkouts = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/fitness/workouts`, {
+      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/fitness/workouts`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setWorkouts(response.data)
@@ -62,7 +62,7 @@ const FitnessTracker = () => {
   const saveProfile = async () => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/fitness/profile`, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/fitness/profile`, {
         weight: parseFloat(userProfile.weight),
         height: parseFloat(userProfile.height),
         age: parseInt(userProfile.age),
@@ -139,7 +139,7 @@ const FitnessTracker = () => {
   const addWorkout = async (workout) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/fitness/workouts`, workout, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/fitness/workouts`, workout, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchWorkouts()
@@ -183,7 +183,7 @@ const FitnessTracker = () => {
       ))
       
       const token = localStorage.getItem('token')
-      await axios.patch(`${import.meta.env.VITE_API_URL}/api/fitness/workouts/${id}`, {
+      await axios.patch(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/fitness/workouts/${id}`, {
         completed: !workout.completed
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -203,7 +203,7 @@ const FitnessTracker = () => {
   const removeWorkout = async (id) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/fitness/workouts/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/fitness/workouts/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchWorkouts()
@@ -224,7 +224,7 @@ const FitnessTracker = () => {
   const fetchDietPlan = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/diet/plan`, {
+      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/plan`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (response.data) {
@@ -241,7 +241,7 @@ const FitnessTracker = () => {
     setWaterIntake(newAmount)
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/diet/plan`, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/plan`, {
         waterIntake: newAmount
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -255,7 +255,7 @@ const FitnessTracker = () => {
   const addMeal = async (meal) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/diet/meals`, meal, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/meals`, meal, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchDietPlan()
@@ -764,7 +764,7 @@ const FitnessTracker = () => {
                           onChange={async (e) => {
                             try {
                               const token = localStorage.getItem('token')
-                              await axios.patch(`${import.meta.env.VITE_API_URL}/api/diet/meals/${meal.id}`, {
+                              await axios.patch(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/meals/${meal.id}`, {
                                 consumed: e.target.checked
                               }, {
                                 headers: { Authorization: `Bearer ${token}` }

@@ -42,7 +42,7 @@ const DietPlanner = () => {
         navigate('/login')
         return
       }
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/diet/plan`, {
+      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/plan`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (response.data) {
@@ -127,7 +127,7 @@ const DietPlanner = () => {
     try {
       const token = localStorage.getItem('token')
       if (!token) return
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/diet/plan`, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/plan`, {
         waterIntake: amount
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -145,7 +145,7 @@ const DietPlanner = () => {
     try {
       const token = localStorage.getItem('token')
       if (!token) return
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/diet/meals`, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/meals`, {
         name: meal.name,
         calories: meal.calories,
         protein: meal.protein,
@@ -172,7 +172,7 @@ const DietPlanner = () => {
       if (mealToRemove) {
         const token = localStorage.getItem('token')
         if (!token) return
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/diet/meals/${mealToRemove.id}`, {
+        await axios.delete(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/diet/meals/${mealToRemove.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       }

@@ -36,7 +36,7 @@ const Scheduler = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/tasks`, {
+      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/tasks`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setTasks(response.data || [])
@@ -59,7 +59,7 @@ const Scheduler = () => {
     
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/tasks`, newTask, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/tasks`, newTask, {
         headers: { Authorization: `Bearer ${token}` }
       })
       
@@ -92,7 +92,7 @@ const Scheduler = () => {
     try {
       const task = tasks.find(t => t.id === id)
       const token = localStorage.getItem('token')
-      await axios.patch(`${import.meta.env.VITE_API_URL}/api/tasks/${id}`, {
+      await axios.patch(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/tasks/${id}`, {
         completed: !task.completed
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -106,7 +106,7 @@ const Scheduler = () => {
   const deleteTask = async (id) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/tasks/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchTasks()

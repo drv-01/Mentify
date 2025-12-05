@@ -94,7 +94,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       
       const API_URL = import.meta.env.MODE === 'production' 
         ? import.meta.env.VITE_PROD_API_URL 
-        : import.meta.env.VITE_API_URL
+        : import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"
       
       const response = await axios.get(`${API_URL}/api/activities`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -113,7 +113,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       
       const API_URL = import.meta.env.MODE === 'production' 
         ? import.meta.env.VITE_PROD_API_URL 
-        : import.meta.env.VITE_API_URL
+        : import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"
       
       await axios.delete(`${API_URL}/api/activities/${activityId}`, {
         headers: { Authorization: `Bearer ${token}` }

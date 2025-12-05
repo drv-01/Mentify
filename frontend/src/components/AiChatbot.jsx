@@ -40,7 +40,7 @@ function AiChatbot() {
   const loadChatHistory = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/chat`, {
+      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/chat`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const history = response.data.map(msg => ({
@@ -63,7 +63,7 @@ function AiChatbot() {
   const saveChatMessage = async (message, isUser) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/chat`, {
+      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/chat`, {
         message,
         isUser
       }, {
@@ -142,7 +142,7 @@ function AiChatbot() {
     if (window.confirm('Are you sure you want to clear your chat history?')) {
       try {
         const token = localStorage.getItem('token')
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/chat`, {
+        await axios.delete(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/chat`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setMessages([])

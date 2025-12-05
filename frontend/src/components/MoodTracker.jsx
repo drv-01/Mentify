@@ -37,7 +37,7 @@ const MoodTracker = () => {
       const token = localStorage.getItem('token')
       console.log('Token from localStorage:', token ? 'Present' : 'Missing')
       console.log('Token length:', token ? token.length : 0)
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/mood`, {
+      const response = await axios.get(`${"https://mentify.onrender.com"}/api/mood`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setEntries(response.data)
@@ -81,7 +81,7 @@ const MoodTracker = () => {
       console.log('Sending mood entry payload:', payload)
       
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/mood`, payload, {
+      await axios.post(`${"https://mentify.onrender.com"}/api/mood`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       })
       
@@ -128,7 +128,7 @@ const MoodTracker = () => {
   const deleteEntry = async (id) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/mood/${id}`, {
+      await axios.delete(`${"https://mentify.onrender.com"}/api/mood/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchMoodEntries()

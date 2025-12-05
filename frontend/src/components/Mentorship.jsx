@@ -52,7 +52,7 @@ const Mentorship = () => {
   const fetchCustomMentors = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/mentorship/custom`, {
+      const response = await axios.get(`https://mentify.onrender.com/api/mentorship/custom`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setCustomMentors(response.data)
@@ -69,7 +69,7 @@ const Mentorship = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/mentorship/custom`, newMentorData, {
+      await axios.post(`https://mentify.onrender.com/api/mentorship/custom`, newMentorData, {
         headers: { Authorization: `Bearer ${token}` }
       })
       
@@ -187,7 +187,7 @@ const Mentorship = () => {
   const logMentorConnection = async (mentor) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/mentorship/connect`, {
+      await axios.post(`https://mentify.onrender.com/api/mentorship/connect`, {
         mentorId: mentor.id,
         mentorName: mentor.name,
         mentorType: mentor.isCustom ? 'custom' : 'default'
