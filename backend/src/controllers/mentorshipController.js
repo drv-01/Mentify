@@ -6,7 +6,7 @@ const getCustomMentors = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const mentors = await prisma.customMentor.findMany({
+    const mentors = await prisma.CustomMentor.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }
     })
@@ -36,7 +36,7 @@ const createCustomMentor = async (req, res) => {
       linkedin
     } = req.body
 
-    const mentor = await prisma.customMentor.create({
+    const mentor = await prisma.CustomMentor.create({
       data: {
         userId,
         name,
@@ -67,7 +67,7 @@ const deleteCustomMentor = async (req, res) => {
     const { id } = req.params
 
     // Check if mentor belongs to user
-    const mentor = await prisma.customMentor.findFirst({
+    const mentor = await prisma.CustomMentor.findFirst({
       where: { id: parseInt(id), userId }
     })
 
@@ -75,7 +75,7 @@ const deleteCustomMentor = async (req, res) => {
       return res.status(404).json({ error: 'Custom mentor not found' })
     }
 
-    await prisma.customMentor.delete({
+    await prisma.CustomMentor.delete({
       where: { id: parseInt(id) }
     })
 
@@ -92,7 +92,7 @@ const logMentorConnection = async (req, res) => {
     const userId = req.user.userId
     const { mentorId, mentorName, mentorType } = req.body
 
-    const connection = await prisma.mentorConnection.create({
+    const connection = await prisma.MentorConnection.create({
       data: {
         userId,
         mentorId: mentorId ? parseInt(mentorId) : null,

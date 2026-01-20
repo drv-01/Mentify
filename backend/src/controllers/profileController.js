@@ -5,7 +5,7 @@ const getProfile = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const user = await prisma.users.findUnique({
+    const user = await prisma.Users.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -33,7 +33,7 @@ const updateProfile = async (req, res) => {
     const userId = req.user.userId
     const { name, email, bio, phone, location } = req.body
 
-    const updatedUser = await prisma.users.update({
+    const updatedUser = await prisma.Users.update({
       where: { id: userId },
       data: {
         name: name || undefined,

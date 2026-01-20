@@ -20,7 +20,7 @@ const getChatHistory = async (req, res) => {
     const userId = req.user.userId
     console.log('Fetching chat history for user:', userId)
     
-    const messages = await prisma.chatMessage.findMany({
+    const messages = await prisma.ChatMessage.findMany({
       where: { userId },
       orderBy: { createdAt: 'asc' },
       take: 50 // Limit to last 50 messages
@@ -42,7 +42,7 @@ const saveChatMessage = async (req, res) => {
     const { message, isUser } = req.body
     console.log('Saving chat message:', { userId, message: message?.substring(0, 50), isUser })
 
-    const chatMessage = await prisma.chatMessage.create({
+    const chatMessage = await prisma.ChatMessage.create({
       data: {
         userId,
         message,
@@ -63,7 +63,7 @@ const clearChatHistory = async (req, res) => {
   try {
     const userId = req.user.userId
 
-    await prisma.chatMessage.deleteMany({
+    await prisma.ChatMessage.deleteMany({
       where: { userId }
     })
 

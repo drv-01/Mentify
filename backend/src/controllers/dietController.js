@@ -6,7 +6,7 @@ const getDietPlan = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const dietPlan = await prisma.dietPlan.findUnique({
+    const dietPlan = await prisma.DietPlan.findUnique({
       where: { userId },
       include: {
         meals: {
@@ -28,7 +28,7 @@ const saveDietPlan = async (req, res) => {
     const userId = req.user.userId
     const { waterIntake } = req.body
     
-    const dietPlan = await prisma.dietPlan.upsert({
+    const dietPlan = await prisma.DietPlan.upsert({
       where: { userId },
       update: { waterIntake },
       create: { userId, waterIntake }
@@ -48,17 +48,17 @@ const addMeal = async (req, res) => {
     const { name, calories, protein, carbs, fat, type } = req.body
     
     // Get or create diet plan
-    let dietPlan = await prisma.dietPlan.findUnique({
+    let dietPlan = await prisma.DietPlan.findUnique({
       where: { userId }
     })
     
     if (!dietPlan) {
-      dietPlan = await prisma.dietPlan.create({
+      dietPlan = await prisma.DietPlan.create({
         data: { userId, waterIntake: 0 }
       })
     }
     
-    const meal = await prisma.meal.create({
+    const meal = await prisma.Meal.create({
       data: {
         dietPlanId: dietPlan.id,
         name,
@@ -86,7 +86,7 @@ const updateMeal = async (req, res) => {
     const { consumed } = req.body
     
     // Verify meal belongs to user
-    const meal = await prisma.meal.findFirst({
+    const meal = await prisma.Meal.findFirst({
       where: {
         id: parseInt(id),
         dietPlan: { userId }
@@ -97,7 +97,7 @@ const updateMeal = async (req, res) => {
       return res.status(404).json({ error: 'Meal not found' })
     }
     
-    const updatedMeal = await prisma.meal.update({
+    const updatedMeal = await prisma.Meal.update({
       where: { id: parseInt(id) },
       data: { consumed }
     })
@@ -116,7 +116,7 @@ const deleteMeal = async (req, res) => {
     const { id } = req.params
     
     // Verify meal belongs to user
-    const meal = await prisma.meal.findFirst({
+    const meal = await prisma.Meal.findFirst({
       where: {
         id: parseInt(id),
         dietPlan: { userId }
@@ -127,7 +127,7 @@ const deleteMeal = async (req, res) => {
       return res.status(404).json({ error: 'Meal not found' })
     }
     
-    await prisma.meal.delete({
+    await prisma.Meal.delete({
       where: { id: parseInt(id) }
     })
     

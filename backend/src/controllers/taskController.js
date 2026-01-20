@@ -19,7 +19,7 @@ const getTasks = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const tasks = await prisma.task.findMany({
+    const tasks = await prisma.Task.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }
     })
@@ -48,7 +48,7 @@ const createTask = async (req, res) => {
       completed: false
     }
 
-    const task = await prisma.task.create({
+    const task = await prisma.Task.create({
       data: taskData
     })
 
@@ -67,7 +67,7 @@ const updateTask = async (req, res) => {
     const { completed } = req.body
 
     // Check if task belongs to user
-    const task = await prisma.task.findFirst({
+    const task = await prisma.Task.findFirst({
       where: { id: parseInt(id), userId }
     })
 
@@ -75,7 +75,7 @@ const updateTask = async (req, res) => {
       return res.status(404).json({ error: 'Task not found' })
     }
 
-    const updatedTask = await prisma.task.update({
+    const updatedTask = await prisma.Task.update({
       where: { id: parseInt(id) },
       data: { completed }
     })
@@ -94,7 +94,7 @@ const deleteTask = async (req, res) => {
     const { id } = req.params
 
     // Check if task belongs to user
-    const task = await prisma.task.findFirst({
+    const task = await prisma.Task.findFirst({
       where: { id: parseInt(id), userId }
     })
 
@@ -102,7 +102,7 @@ const deleteTask = async (req, res) => {
       return res.status(404).json({ error: 'Task not found' })
     }
 
-    await prisma.task.delete({
+    await prisma.Task.delete({
       where: { id: parseInt(id) }
     })
 

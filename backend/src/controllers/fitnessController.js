@@ -6,7 +6,7 @@ const getFitnessProfile = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const profile = await prisma.fitnessProfile.findUnique({
+    const profile = await prisma.FitnessProfile.findUnique({
       where: { userId }
     })
     
@@ -23,7 +23,7 @@ const saveFitnessProfile = async (req, res) => {
     const userId = req.user.userId
     const { weight, height, age, selectedDay } = req.body
     
-    const profile = await prisma.fitnessProfile.upsert({
+    const profile = await prisma.FitnessProfile.upsert({
       where: { userId },
       update: { weight, height, age, selectedDay },
       create: { userId, weight, height, age, selectedDay }
@@ -41,7 +41,7 @@ const getWorkouts = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const workouts = await prisma.workout.findMany({
+    const workouts = await prisma.Workout.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }
     })
@@ -59,7 +59,7 @@ const addWorkout = async (req, res) => {
     const userId = req.user.userId
     const { name, duration, calories, type, icon, description, instructions, date, completed } = req.body
     
-    const workout = await prisma.workout.create({
+    const workout = await prisma.Workout.create({
       data: {
         userId,
         name,
@@ -88,7 +88,7 @@ const updateWorkout = async (req, res) => {
     const { id } = req.params
     const { completed } = req.body
     
-    const workout = await prisma.workout.updateMany({
+    const workout = await prisma.Workout.updateMany({
       where: { 
         id: parseInt(id),
         userId 
@@ -109,7 +109,7 @@ const deleteWorkout = async (req, res) => {
     const userId = req.user.userId
     const { id } = req.params
     
-    await prisma.workout.deleteMany({
+    await prisma.Workout.deleteMany({
       where: { 
         id: parseInt(id),
         userId 

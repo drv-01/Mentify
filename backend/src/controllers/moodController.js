@@ -19,7 +19,7 @@ const getMoodEntries = async (req, res) => {
   try {
     const userId = req.user.userId
     
-    const entries = await prisma.moodEntry.findMany({
+    const entries = await prisma.MoodEntry.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }
     })
@@ -65,7 +65,7 @@ const createMoodEntry = async (req, res) => {
       mealPattern: mealPattern || null
     }
 
-    const entry = await prisma.moodEntry.create({
+    const entry = await prisma.MoodEntry.create({
       data: entryData
     })
 
@@ -83,7 +83,7 @@ const deleteMoodEntry = async (req, res) => {
     const { id } = req.params
 
     // Check if entry belongs to user
-    const entry = await prisma.moodEntry.findFirst({
+    const entry = await prisma.MoodEntry.findFirst({
       where: { id: parseInt(id), userId }
     })
 
@@ -91,7 +91,7 @@ const deleteMoodEntry = async (req, res) => {
       return res.status(404).json({ error: 'Mood entry not found' })
     }
 
-    await prisma.moodEntry.delete({
+    await prisma.MoodEntry.delete({
       where: { id: parseInt(id) }
     })
 
