@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
-const API_URL = import.meta.env.VITE_PROD_API_URL || 'https://mentify.onrender.com'
+const API_URL = API_BASE_URL
 
 export const logActivity = async (type, action) => {
   try {

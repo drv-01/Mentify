@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import MotivationCard from './MotivationCard'
 import { handleSessionExpiry, checkAuthError } from '../utils/auth'
+import { API_BASE_URL } from '../config/api'
 
 const Dashboard = ({ setIsAuthenticated }) => {
   const navigate = useNavigate()
@@ -91,9 +92,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
-
-      const response = await axios.get(`${API_URL}/api/activities/streak`, {
+      const response = await axios.get(`${API_BASE_URL}/api/activities/streak`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setStreak(response.data.streak || 0)
@@ -111,9 +110,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
         return
       }
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
-
-      const response = await axios.get(`${API_URL}/api/activities`, {
+      const response = await axios.get(`${API_BASE_URL}/api/activities`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setRecentActivities(response.data || [])
@@ -129,9 +126,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
-
-      const response = await axios.post(`${API_URL}/api/activities/adjust-streak`, { adjustment: amount }, {
+      const response = await axios.post(`${API_BASE_URL}/api/activities/adjust-streak`, { adjustment: amount }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       
@@ -148,9 +143,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
-
-      await axios.delete(`${API_URL}/api/activities/${activityId}`, {
+      await axios.delete(`${API_BASE_URL}/api/activities/${activityId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchActivities()
