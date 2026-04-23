@@ -5,7 +5,8 @@ const {
   saveDietPlan,
   addMeal,
   updateMeal,
-  deleteMeal
+  deleteMeal,
+  deleteMealByType
 } = require('../controllers/dietController')
 const authMiddleware = require('../middleware/authMiddleware')
 
@@ -19,6 +20,7 @@ router.post('/plan', saveDietPlan)
 // Meal routes
 router.post('/meals', addMeal)
 router.patch('/meals/:id', updateMeal)
+router.delete('/meals/type/:type', deleteMealByType)
 router.delete('/meals/:id', deleteMeal)
 
 module.exports = router

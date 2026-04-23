@@ -40,8 +40,10 @@ const Signup = ({ setIsAuthenticated }) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, formData)
       localStorage.setItem('token', response.data.token)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
       localStorage.setItem('isNewUser', 'true')
       setIsAuthenticated(true)
+      window.location.href = '/dashboard'
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create account')
     } finally {

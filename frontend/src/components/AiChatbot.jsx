@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API_BASE_URL } from '../config/api'
 
 function AiChatbot() {
   const navigate = useNavigate()
@@ -8,10 +9,9 @@ function AiChatbot() {
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [currentModel, setCurrentModel] = useState("meta/llama-3.1-8b-instruct")
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
-
-  const API_KEY = "AIzaSyC8lcrRWBsG_g-5WP1Eo4OrsmTd6YHVZGA"
 
   useEffect(() => {
     const theme = localStorage.getItem('theme')
@@ -40,7 +40,7 @@ function AiChatbot() {
   const loadChatHistory = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/chat`, {
+      const response = await axios.get(`${API_BASE_URL}/api/chat`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const history = response.data.map(msg => ({
@@ -60,24 +60,6 @@ function AiChatbot() {
     }
   }
 
-  const saveChatMessage = async (message, isUser) => {
-    try {
-      const token = localStorage.getItem('token')
-      await axios.post(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/chat`, {
-        message,
-        isUser
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-    } catch (error) {
-      console.error('Error saving chat message:', error)
-    }
-  }
-
-  const createContextualPrompt = (userMessage) => {
-    return `You are a helpful AI assistant focused on mental health and wellness for students. Please provide a clear, supportive, and helpful response to the following question: ${userMessage}`
-  }
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -91,47 +73,35 @@ function AiChatbot() {
     setInputMessage("")
     setIsLoading(true)
     
-    // Save user message
-    await saveChatMessage(userMessage, true)
-    
     try {
-      const contextualPrompt = createContextualPrompt(userMessage)
-      const res = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
-        "contents": [{
-          "parts": [{ "text": contextualPrompt }]
-        }]
+      const token = localStorage.getItem('token')
+      const response = await axios.post(`${API_BASE_URL}/api/chat/ai`, {
+        message: userMessage
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       })
       
-      const aiResponse = res.data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't generate a response. Please try again."
+      const aiResponse = response.data.response
+      const modelUsed = response.data.modelUsed
+      
+      if (modelUsed) {
+        setCurrentModel(modelUsed)
+      }
+      
       const aiMsgObj = { text: aiResponse, isUser: false, id: Date.now() + 1 }
       setMessages(prev => [...prev, aiMsgObj])
       
-      // Save AI response
-      await saveChatMessage(aiResponse, false)
-      
     } catch (error) {
-      console.error("Error getting AI response:", error)
+      console.error("Error getting AI response:", error?.response?.data || error?.message || error)
       
-      const getFallbackResponse = (question) => {
-        const q = question.toLowerCase()
-        if (q.includes('hello') || q.includes('hi')) {
-          return "Hello! I'm here to help you with any questions about mental health, wellness, or student life. How can I assist you today?"
-        }
-        if (q.includes('stress') || q.includes('anxiety')) {
-          return "I understand you're dealing with stress or anxiety. Remember to take deep breaths, practice mindfulness, and don't hesitate to reach out to friends, family, or counselors for support."
-        }
-        if (q.includes('study') || q.includes('exam')) {
-          return "Study stress is common! Try breaking tasks into smaller chunks, taking regular breaks, and maintaining a healthy sleep schedule. You've got this!"
-        }
-        return "I'm having trouble connecting right now, but I'm still here to help! Could you try rephrasing your question?"
+      // Show the actual error to make debugging easier
+      const errorDetail = error?.response?.data?.error || error?.message || 'Unknown error'
+      const errorMsgObj = { 
+        text: `⚠️ AI service error: ${errorDetail}. Please try again in a moment.`, 
+        isUser: false, 
+        id: Date.now() + 1 
       }
-      
-      const fallbackResponse = getFallbackResponse(userMessage)
-      const fallbackMsgObj = { text: fallbackResponse, isUser: false, id: Date.now() + 1 }
-      setMessages(prev => [...prev, fallbackMsgObj])
-      
-      // Save fallback response
-      await saveChatMessage(fallbackResponse, false)
+      setMessages(prev => [...prev, errorMsgObj])
       
     } finally {
       setIsLoading(false)
@@ -142,7 +112,7 @@ function AiChatbot() {
     if (window.confirm('Are you sure you want to clear your chat history?')) {
       try {
         const token = localStorage.getItem('token')
-        await axios.delete(`${import.meta.env.VITE_PROD_API_URL || "https://mentify.onrender.com"}/api/chat`, {
+        await axios.delete(`${API_BASE_URL}/api/chat`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setMessages([])
@@ -152,178 +122,565 @@ function AiChatbot() {
     }
   }
 
+  // Quick suggestion buttons
+  const suggestions = [
+    "How can I manage exam stress?",
+    "Tips for better sleep",
+    "Help me stay motivated",
+    "Mindfulness exercises"
+  ]
+
+  const handleSuggestionClick = (suggestion) => {
+    setInputMessage(suggestion)
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 100)
+  }
+
+  // Format AI message text (basic markdown-like rendering)
+  const formatMessage = (text) => {
+    if (!text) return text
+    // Bold
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Bullet points
+    formatted = formatted.replace(/^[•\-]\s+(.+)$/gm, '<li>$1</li>')
+    // Wrap consecutive <li> in <ul>
+    formatted = formatted.replace(/((<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
+    // Line breaks
+    formatted = formatted.replace(/\n/g, '<br/>')
+    return formatted
+  }
+
   return (
-    <div className={`min-h-screen transition-all duration-300 ${
-      isToggled ? 'bg-gray-900' : 'bg-gray-50'
-    }`}>
+    <div style={{
+      minHeight: '100vh',
+      background: isToggled 
+        ? 'linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%)' 
+        : 'linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f0ff 100%)',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      transition: 'all 0.3s ease'
+    }}>
+
       {/* Header */}
-      <div className={`shadow-sm border-b transition-all duration-300 ${
-        isToggled ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+      <div style={{
+        background: isToggled 
+          ? 'rgba(15, 15, 26, 0.85)' 
+          : 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: isToggled ? '1px solid rgba(118, 185, 0, 0.15)' : '1px solid rgba(0, 0, 0, 0.06)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        boxShadow: isToggled 
+          ? '0 4px 30px rgba(118, 185, 0, 0.05)' 
+          : '0 4px 30px rgba(0, 0, 0, 0.04)'
+      }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <button 
                 onClick={() => navigate('/dashboard')}
-                className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
-                  isToggled ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
-                }`}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: isToggled ? 'rgba(118, 185, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)',
+                  color: isToggled ? '#76b900' : '#333',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontSize: '18px'
+                }}
+                onMouseEnter={e => {
+                  e.target.style.background = isToggled ? 'rgba(118, 185, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'
+                  e.target.style.transform = 'scale(1.05)'
+                }}
+                onMouseLeave={e => {
+                  e.target.style.background = isToggled ? 'rgba(118, 185, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)'
+                  e.target.style.transform = 'scale(1)'
+                }}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
+                ←
               </button>
-              <h1 className={`text-xl sm:text-2xl font-bold ${
-                isToggled ? 'text-white' : 'text-gray-900'
-              }`}>AI Chatbot</h1>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, #76b900, #5a9e00)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '18px',
+                    boxShadow: '0 4px 15px rgba(118, 185, 0, 0.3)'
+                  }}>
+                    🤖
+                  </div>
+                  <div>
+                    <h1 style={{
+                      fontSize: '18px',
+                      fontWeight: '700',
+                      color: isToggled ? '#ffffff' : '#1a1a2e',
+                      margin: 0,
+                      letterSpacing: '-0.3px'
+                    }}>Mentify AI</h1>
+                    <p style={{
+                      fontSize: '11px',
+                      color: '#76b900',
+                      margin: 0,
+                      fontWeight: '600',
+                      letterSpacing: '0.5px',
+                      textTransform: 'uppercase'
+                    }}>Powered by NVIDIA NIM</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            {messages.length > 0 && (
-              <button
-                onClick={clearChat}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                  isToggled 
-                    ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                    : 'bg-gray-900 hover:bg-gray-800 text-white'
-                }`}
-              >
-                Clear Chat
-              </button>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Online indicator */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                background: isToggled ? 'rgba(118, 185, 0, 0.1)' : 'rgba(118, 185, 0, 0.08)',
+                border: '1px solid rgba(118, 185, 0, 0.2)'
+              }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#76b900',
+                  boxShadow: '0 0 8px rgba(118, 185, 0, 0.6)',
+                  animation: 'pulse 2s infinite'
+                }} />
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#76b900'
+                }}>Online</span>
+              </div>
+              {messages.length > 0 && (
+                <button
+                  onClick={clearChat}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: isToggled ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.08)',
+                    color: '#ef4444',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => {
+                    e.target.style.background = isToggled ? 'rgba(239, 68, 68, 0.25)' : 'rgba(239, 68, 68, 0.15)'
+                  }}
+                  onMouseLeave={e => {
+                    e.target.style.background = isToggled ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.08)'
+                  }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-32">
+      {/* Chat Area */}
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 24px 180px' }}>
+        
+        {/* Welcome Screen */}
         {messages.length === 0 && (
-          <div className={`rounded-2xl shadow-lg p-8 text-center mb-6 ${
-            isToggled ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <div className="text-5xl mb-4">🤖</div>
-            <h2 className={`text-xl font-bold mb-2 ${
-              isToggled ? 'text-white' : 'text-gray-900'
-            }`}>Welcome to AI Assistant</h2>
-            <p className={`${
-              isToggled ? 'text-gray-400' : 'text-gray-600'
-            }`}>Start a conversation by typing a message below. I'm here to help with mental health, wellness, and student life questions.</p>
+          <div style={{ textAlign: 'center', paddingTop: '40px' }}>
+            {/* Hero */}
+            <div style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '24px',
+              background: 'linear-gradient(135deg, #76b900, #5a9e00)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '40px',
+              margin: '0 auto 24px',
+              boxShadow: '0 12px 40px rgba(118, 185, 0, 0.3)',
+              animation: 'float 3s ease-in-out infinite'
+            }}>
+              🤖
+            </div>
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: '800',
+              color: isToggled ? '#ffffff' : '#1a1a2e',
+              marginBottom: '8px',
+              letterSpacing: '-0.5px'
+            }}>Welcome to Mentify AI</h2>
+            <p style={{
+              fontSize: '15px',
+              color: isToggled ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
+              marginBottom: '40px',
+              maxWidth: '450px',
+              margin: '0 auto 40px',
+              lineHeight: '1.6'
+            }}>
+              Your personal wellness companion powered by <span style={{ color: '#76b900', fontWeight: '600' }}>NVIDIA NIM</span>. 
+              I can help with stress, study tips, mental health, and more.
+            </p>
+
+            {/* Suggestion Chips */}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              justifyContent: 'center',
+              maxWidth: '600px',
+              margin: '0 auto 32px'
+            }}>
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '16px',
+                    border: isToggled ? '1px solid rgba(118, 185, 0, 0.2)' : '1px solid rgba(0, 0, 0, 0.08)',
+                    background: isToggled ? 'rgba(118, 185, 0, 0.08)' : 'rgba(255, 255, 255, 0.8)',
+                    color: isToggled ? 'rgba(255,255,255,0.8)' : '#333',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: isToggled ? 'none' : '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
+                  onMouseEnter={e => {
+                    e.target.style.background = isToggled ? 'rgba(118, 185, 0, 0.18)' : 'rgba(118, 185, 0, 0.08)'
+                    e.target.style.borderColor = 'rgba(118, 185, 0, 0.4)'
+                    e.target.style.transform = 'translateY(-2px)'
+                    e.target.style.boxShadow = '0 6px 20px rgba(118, 185, 0, 0.15)'
+                  }}
+                  onMouseLeave={e => {
+                    e.target.style.background = isToggled ? 'rgba(118, 185, 0, 0.08)' : 'rgba(255, 255, 255, 0.8)'
+                    e.target.style.borderColor = isToggled ? 'rgba(118, 185, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'
+                    e.target.style.transform = 'translateY(0)'
+                    e.target.style.boxShadow = isToggled ? 'none' : '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            {/* Features Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '12px',
+              maxWidth: '650px',
+              margin: '0 auto'
+            }}>
+              {[
+                { icon: '🧘', title: 'Stress Relief', desc: 'Relaxation & coping strategies' },
+                { icon: '📚', title: 'Study Tips', desc: 'Productivity & focus advice' },
+                { icon: '💪', title: 'Motivation', desc: 'Goal-setting & positivity' },
+                { icon: '😴', title: 'Sleep Health', desc: 'Better rest & recovery' }
+              ].map((feature, i) => (
+                <div key={i} style={{
+                  padding: '20px',
+                  borderRadius: '16px',
+                  background: isToggled ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)',
+                  border: isToggled ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)',
+                  backdropFilter: 'blur(10px)',
+                  textAlign: 'left'
+                }}>
+                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>{feature.icon}</div>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    color: isToggled ? '#ffffff' : '#1a1a2e',
+                    marginBottom: '4px'
+                  }}>{feature.title}</div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: isToggled ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'
+                  }}>{feature.desc}</div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
         
-        <div className="space-y-4">
+        {/* Messages */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`rounded-2xl shadow-lg p-4 ${
-                message.isUser 
-                  ? isToggled ? 'bg-gray-700 ml-12' : 'bg-gray-100 ml-12'
-                  : isToggled ? 'bg-gray-800 mr-12' : 'bg-white mr-12'
-              }`}
+              style={{
+                display: 'flex',
+                justifyContent: message.isUser ? 'flex-end' : 'flex-start',
+                animation: 'slideIn 0.3s ease-out'
+              }}
             >
-              <div className="flex items-center mb-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                  message.isUser 
-                    ? isToggled ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700'
-                    : isToggled ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'
-                }`}>
+              <div style={{
+                maxWidth: '75%',
+                display: 'flex',
+                gap: '10px',
+                flexDirection: message.isUser ? 'row-reverse' : 'row',
+                alignItems: 'flex-start'
+              }}>
+                {/* Avatar */}
+                <div style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '10px',
+                  background: message.isUser 
+                    ? (isToggled ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)')
+                    : 'linear-gradient(135deg, #76b900, #5a9e00)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '16px',
+                  flexShrink: 0,
+                  boxShadow: message.isUser ? 'none' : '0 4px 12px rgba(118, 185, 0, 0.25)'
+                }}>
                   {message.isUser ? '👤' : '🤖'}
                 </div>
-                <span className={`ml-2 font-medium text-sm ${
-                  isToggled ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  {message.isUser ? "You" : "AI Assistant"}
-                </span>
-              </div>
-              
-              <div className={`ml-10 whitespace-pre-wrap ${
-                isToggled ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                {message.text}
+
+                {/* Message Bubble */}
+                <div style={{
+                  padding: '14px 18px',
+                  borderRadius: message.isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                  background: message.isUser 
+                    ? (isToggled 
+                        ? 'linear-gradient(135deg, rgba(118, 185, 0, 0.2), rgba(118, 185, 0, 0.1))' 
+                        : 'linear-gradient(135deg, #1a1a2e, #16213e)')
+                    : (isToggled 
+                        ? 'rgba(255, 255, 255, 0.05)' 
+                        : 'rgba(255, 255, 255, 0.9)'),
+                  border: message.isUser 
+                    ? (isToggled ? '1px solid rgba(118, 185, 0, 0.15)' : 'none')
+                    : (isToggled ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)'),
+                  color: message.isUser 
+                    ? '#ffffff' 
+                    : (isToggled ? 'rgba(255,255,255,0.85)' : '#333'),
+                  fontSize: '14px',
+                  lineHeight: '1.65',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: message.isUser 
+                    ? (isToggled ? '0 4px 15px rgba(118, 185, 0, 0.1)' : '0 4px 15px rgba(26, 26, 46, 0.2)')
+                    : '0 2px 10px rgba(0,0,0,0.04)',
+                  wordBreak: 'break-word'
+                }}
+                  dangerouslySetInnerHTML={{ __html: message.isUser ? message.text : formatMessage(message.text) }}
+                />
               </div>
             </div>
           ))}
           
+          {/* Loading Indicator */}
           {isLoading && (
-            <div className={`rounded-2xl shadow-lg p-4 mr-12 ${
-              isToggled ? 'bg-gray-800' : 'bg-white'
-            }`}>
-              <div className="flex items-center mb-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                  isToggled ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'
-                }`}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              animation: 'slideIn 0.3s ease-out'
+            }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <div style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #76b900, #5a9e00)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '16px',
+                  boxShadow: '0 4px 12px rgba(118, 185, 0, 0.25)'
+                }}>
                   🤖
                 </div>
-                <span className={`ml-2 font-medium text-sm ${
-                  isToggled ? 'text-gray-300' : 'text-gray-700'
-                }`}>AI Assistant</span>
-              </div>
-              <div className={`ml-10 flex items-center ${
-                isToggled ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                <div className="animate-spin text-lg">⟳</div>
-                <span className="ml-2">Thinking...</span>
+                <div style={{
+                  padding: '16px 22px',
+                  borderRadius: '18px 18px 18px 4px',
+                  background: isToggled ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.9)',
+                  border: isToggled ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)',
+                  backdropFilter: 'blur(10px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  {[0, 1, 2].map(i => (
+                    <div key={i} style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: '#76b900',
+                      opacity: 0.6,
+                      animation: `bounce 1.4s infinite ease-in-out both`,
+                      animationDelay: `${i * 0.16}s`
+                    }} />
+                  ))}
+                </div>
               </div>
             </div>
           )}
           
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Wellness Tips */}
-        {messages.length === 0 && (
-          <div className={`rounded-2xl shadow-lg p-6 mt-6 ${
-            isToggled 
-              ? 'bg-linear-to-br from-gray-800 to-gray-700 text-white'
-              : 'bg-linear-to-br from-gray-100 to-gray-200 text-gray-900'
-          }`}>
-            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-              💡 Ask me about
-            </h3>
-            <div className="space-y-2 text-sm">
-              <p>• Stress management and relaxation techniques</p>
-              <p>• Study tips and time management strategies</p>
-              <p>• Mental health resources and support</p>
-              <p>• Healthy lifestyle habits for students</p>
-              <p>• Motivation and goal-setting advice</p>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Fixed Input */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4">
-        <div className={`rounded-2xl shadow-lg p-3 flex items-center space-x-3 ${
-          isToggled ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
-        }`}>
+      {/* Fixed Input Bar */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: '16px 24px 24px',
+        background: isToggled 
+          ? 'linear-gradient(to top, rgba(15, 15, 26, 1) 60%, rgba(15, 15, 26, 0))' 
+          : 'linear-gradient(to top, rgba(240, 244, 255, 1) 60%, rgba(240, 244, 255, 0))',
+        zIndex: 50
+      }}>
+        <div style={{
+          maxWidth: '900px',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '8px 8px 8px 20px',
+          borderRadius: '20px',
+          background: isToggled ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.95)',
+          border: isToggled ? '1px solid rgba(118, 185, 0, 0.15)' : '1px solid rgba(0, 0, 0, 0.08)',
+          backdropFilter: 'blur(20px)',
+          boxShadow: isToggled 
+            ? '0 8px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(118, 185, 0, 0.05)' 
+            : '0 8px 40px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease'
+        }}>
           <input
             ref={inputRef}
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            className={`flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 transition-all duration-200 ${
-              isToggled 
-                ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500 placeholder-gray-500'
-                : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400 placeholder-gray-500'
-            }`}
+            style={{
+              flex: 1,
+              padding: '14px 0',
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              color: isToggled ? '#ffffff' : '#1a1a2e',
+              fontSize: '15px',
+              fontFamily: "'Inter', sans-serif"
+            }}
             type="text"
-            placeholder="Ask me anything about mental health, wellness, or student life..."
+            placeholder="Ask me anything about wellness, study tips, or mental health..."
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             disabled={isLoading}
           />
           <button
-            className={`px-5 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
-              inputMessage.trim() && !isLoading
-                ? isToggled ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-900 hover:bg-gray-800 text-white'
-                : 'bg-gray-300 cursor-not-allowed text-gray-500'
-            }`}
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isLoading}
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '14px',
+              border: 'none',
+              background: inputMessage.trim() && !isLoading 
+                ? 'linear-gradient(135deg, #76b900, #5a9e00)' 
+                : (isToggled ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'),
+              color: inputMessage.trim() && !isLoading ? '#ffffff' : (isToggled ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: inputMessage.trim() && !isLoading ? 'pointer' : 'not-allowed',
+              transition: 'all 0.25s ease',
+              fontSize: '20px',
+              boxShadow: inputMessage.trim() && !isLoading ? '0 4px 15px rgba(118, 185, 0, 0.35)' : 'none',
+              flexShrink: 0
+            }}
+            onMouseEnter={e => {
+              if (inputMessage.trim() && !isLoading) {
+                e.target.style.transform = 'scale(1.05)'
+                e.target.style.boxShadow = '0 6px 20px rgba(118, 185, 0, 0.45)'
+              }
+            }}
+            onMouseLeave={e => {
+              e.target.style.transform = 'scale(1)'
+              if (inputMessage.trim() && !isLoading) {
+                e.target.style.boxShadow = '0 4px 15px rgba(118, 185, 0, 0.35)'
+              }
+            }}
           >
             {isLoading ? (
-              <div className="animate-spin text-lg">⟳</div>
-            ) : (
-              <div className="text-lg">➤</div>
-            )}
+              <div style={{
+                width: '20px',
+                height: '20px',
+                border: '2px solid rgba(118, 185, 0, 0.3)',
+                borderTop: '2px solid #76b900',
+                borderRadius: '50%',
+                animation: 'spin 0.8s linear infinite'
+              }} />
+            ) : '➤'}
           </button>
         </div>
+        <p style={{
+          textAlign: 'center',
+          fontSize: '11px',
+          color: isToggled ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)',
+          marginTop: '8px',
+          fontWeight: '500'
+        }}>
+          Powered by NVIDIA NIM · {currentModel}
+        </p>
       </div>
+
+      {/* CSS Animations */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0); }
+          40% { transform: scale(1); }
+        }
+        
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+          background: rgba(118, 185, 0, 0.3); 
+          border-radius: 3px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(118, 185, 0, 0.5); }
+
+        ul { padding-left: 16px; margin: 8px 0; }
+        li { margin: 4px 0; list-style: disc; }
+      `}</style>
     </div>
   )
 }

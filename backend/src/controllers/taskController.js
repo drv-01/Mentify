@@ -1,18 +1,4 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient({
-  log: ['error'],
-  errorFormat: 'pretty',
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
-    }
-  }
-})
-
-// Test connection on startup
-prisma.$connect().catch(err => {
-  console.error('Failed to connect to database:', err)
-})
+const prisma = require('../db/prisma')
 
 // Get all tasks for a user
 const getTasks = async (req, res) => {

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
+import { checkAuthError } from '../utils/auth'
 
-const MoodTracker = () => {
+const MoodTracker = ({ setIsAuthenticated }) => {
   const navigate = useNavigate()
   const [isToggled, setIsToggled] = useState(false)
   const [entries, setEntries] = useState([])
@@ -19,7 +21,7 @@ const MoodTracker = () => {
     const theme = localStorage.getItem('theme')
     setIsToggled(theme === 'dark')
     fetchMoodEntries()
-    
+
     // Track page visit
     const activity = {
       id: Date.now(),
@@ -37,25 +39,18 @@ const MoodTracker = () => {
       const token = localStorage.getItem('token')
       console.log('Token from localStorage:', token ? 'Present' : 'Missing')
       console.log('Token length:', token ? token.length : 0)
-      const response = await axios.get(`${"https://mentify.onrender.com"}/api/mood`, {
+      const response = await axios.get(`${API_BASE_URL}/api/mood`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setEntries(response.data)
     } catch (error) {
       console.error('Error fetching mood entries:', error)
-      if (error.response?.status === 401) {
-        console.log('Token appears to be invalid or expired')
-        // Clear invalid token and redirect to login
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        alert('Your session has expired. Please log in again.')
-        navigate('/login')
-      }
+      checkAuthError(error, navigate, setIsAuthenticated)
     }
   }
 
   const triggers = [
-    'Exams', 'Assignments', 'Labs', 'Projects', 'Placements', 
+    'Exams', 'Assignments', 'Labs', 'Projects', 'Placements',
     'Internships', 'Sleep Deprivation', 'Social Pressure', 'Other'
   ]
 
@@ -63,7 +58,7 @@ const MoodTracker = () => {
     try {
       const moodLabel = stressLevel <= 3 ? 'Great' : stressLevel <= 5 ? 'Okay' : stressLevel <= 7 ? 'Stressed' : 'Overwhelmed'
       const moodEmoji = stressLevel <= 3 ? '😊' : stressLevel <= 5 ? '😐' : stressLevel <= 7 ? '😰' : '😫'
-      
+
       const payload = {
         mood: moodLabel.toLowerCase(),
         moodLabel,
@@ -77,14 +72,14 @@ const MoodTracker = () => {
         physicalActivity: physicalActivity || null,
         mealPattern: mealPattern || null
       }
-      
+
       console.log('Sending mood entry payload:', payload)
-      
+
       const token = localStorage.getItem('token')
-      await axios.post(`${"https://mentify.onrender.com"}/api/mood`, payload, {
+      await axios.post(`${API_BASE_URL}/api/mood`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      
+
       // Track activity
       const activity = {
         id: Date.now(),
@@ -95,7 +90,7 @@ const MoodTracker = () => {
       const existingActivities = JSON.parse(localStorage.getItem('recentActivities') || '[]')
       const updatedActivities = [activity, ...existingActivities.slice(0, 4)]
       localStorage.setItem('recentActivities', JSON.stringify(updatedActivities))
-      
+
       // Reset form
       setStressLevel(5)
       setTrigger('')
@@ -105,17 +100,12 @@ const MoodTracker = () => {
       setSocialConnection(5)
       setPhysicalActivity('')
       setMealPattern('')
-      
+
       // Refresh entries
       fetchMoodEntries()
     } catch (error) {
       console.error('Error saving mood entry:', error)
-      if (error.response?.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        alert('Your session has expired. Please log in again.')
-        navigate('/login')
-      }
+      checkAuthError(error, navigate, setIsAuthenticated)
     }
   }
 
@@ -128,12 +118,13 @@ const MoodTracker = () => {
   const deleteEntry = async (id) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${"https://mentify.onrender.com"}/api/mood/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/mood/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchMoodEntries()
     } catch (error) {
       console.error('Error deleting mood entry:', error)
+      checkAuthError(error, navigate, setIsAuthenticated)
     }
   }
 
@@ -144,36 +135,32 @@ const MoodTracker = () => {
     const older = entries.slice(3, 6)
     if (older.length === 0) return 'neutral'
     const avgOlder = older.reduce((acc, e) => acc + e.stressLevel, 0) / older.length
-    
+
     if (avgRecent < avgOlder - 1) return 'improving'
     if (avgRecent > avgOlder + 1) return 'declining'
     return 'stable'
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-300 ${
-      isToggled ? 'bg-gray-900' : 'bg-gray-50'
-    }`}>
-      {/* Header */}
-      <div className={`shadow-sm border-b transition-all duration-300 ${
-        isToggled ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+    <div className={`min-h-screen transition-all duration-300 ${isToggled ? 'bg-gray-900' : 'bg-gray-50'
       }`}>
+      {/* Header */}
+      <div className={`shadow-sm border-b transition-all duration-300 ${isToggled ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 onClick={() => navigate('/dashboard')}
-                className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
-                  isToggled ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
-                }`}
+                className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 ${isToggled ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                  }`}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className={`text-xl sm:text-2xl font-bold ${
-                isToggled ? 'text-white' : 'text-gray-900'
-              }`}>Mood Tracker</h1>
+              <h1 className={`text-xl sm:text-2xl font-bold ${isToggled ? 'text-white' : 'text-gray-900'
+                }`}>Mood Tracker</h1>
             </div>
           </div>
         </div>
@@ -183,55 +170,43 @@ const MoodTracker = () => {
         {/* Quick Stats */}
         {entries.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className={`rounded-xl shadow p-4 text-center ${
-              isToggled ? 'bg-gray-800' : 'bg-white'
-            }`}>
+            <div className={`rounded-xl shadow p-4 text-center ${isToggled ? 'bg-gray-800' : 'bg-white'
+              }`}>
               <div className="text-2xl mb-2">📅</div>
-              <div className={`text-2xl font-bold ${
-                isToggled ? 'text-gray-300' : 'text-gray-800'
-              }`}>{entries.length}</div>
-              <div className={`text-sm ${
-                isToggled ? 'text-gray-400' : 'text-gray-600'
-              }`}>Check-ins</div>
+              <div className={`text-2xl font-bold ${isToggled ? 'text-gray-300' : 'text-gray-800'
+                }`}>{entries.length}</div>
+              <div className={`text-sm ${isToggled ? 'text-gray-400' : 'text-gray-600'
+                }`}>Check-ins</div>
             </div>
-            <div className={`rounded-xl shadow p-4 text-center ${
-              isToggled ? 'bg-gray-800' : 'bg-white'
-            }`}>
+            <div className={`rounded-xl shadow p-4 text-center ${isToggled ? 'bg-gray-800' : 'bg-white'
+              }`}>
               <div className="text-2xl mb-2">🧠</div>
-              <div className={`text-2xl font-bold ${
-                isToggled ? 'text-gray-300' : 'text-gray-800'
-              }`}>{getAverageStress()}/10</div>
-              <div className={`text-sm ${
-                isToggled ? 'text-gray-400' : 'text-gray-600'
-              }`}>Avg Stress</div>
+              <div className={`text-2xl font-bold ${isToggled ? 'text-gray-300' : 'text-gray-800'
+                }`}>{getAverageStress()}/10</div>
+              <div className={`text-sm ${isToggled ? 'text-gray-400' : 'text-gray-600'
+                }`}>Avg Stress</div>
             </div>
-            <div className={`rounded-xl shadow p-4 text-center ${
-              isToggled ? 'bg-gray-800' : 'bg-white'
-            }`}>
+            <div className={`rounded-xl shadow p-4 text-center ${isToggled ? 'bg-gray-800' : 'bg-white'
+              }`}>
               <div className="text-2xl mb-2">📈</div>
-              <div className={`text-2xl font-bold capitalize ${
-                isToggled ? 'text-gray-300' : 'text-gray-800'
-              }`}>{getRecentTrend()}</div>
-              <div className={`text-sm ${
-                isToggled ? 'text-gray-400' : 'text-gray-600'
-              }`}>Trend</div>
+              <div className={`text-2xl font-bold capitalize ${isToggled ? 'text-gray-300' : 'text-gray-800'
+                }`}>{getRecentTrend()}</div>
+              <div className={`text-sm ${isToggled ? 'text-gray-400' : 'text-gray-600'
+                }`}>Trend</div>
             </div>
           </div>
         )}
 
         {/* Mood Entry Form */}
-        <div className={`rounded-2xl shadow-lg p-6 mb-6 ${
-          isToggled ? 'bg-gray-800' : 'bg-white'
-        }`}>
-          <h2 className={`text-xl font-bold mb-4 ${
-            isToggled ? 'text-white' : 'text-gray-900'
-          }`}>How are you feeling today?</h2>
+        <div className={`rounded-2xl shadow-lg p-6 mb-6 ${isToggled ? 'bg-gray-800' : 'bg-white'
+          }`}>
+          <h2 className={`text-xl font-bold mb-4 ${isToggled ? 'text-white' : 'text-gray-900'
+            }`}>How are you feeling today?</h2>
 
           {/* Stress Level */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Stress Level: {stressLevel}/10
             </label>
             <input
@@ -250,19 +225,17 @@ const MoodTracker = () => {
 
           {/* Trigger Selection */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               What's on your mind?
             </label>
             <select
               value={trigger}
               onChange={(e) => setTrigger(e.target.value)}
-              className={`w-full p-3 border-2 rounded-lg focus:outline-none ${
-                isToggled 
-                  ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500'
-                  : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400'
-              }`}
+              className={`w-full p-3 border-2 rounded-lg focus:outline-none ${isToggled
+                ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500'
+                : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400'
+                }`}
             >
               <option value="">Select a trigger (optional)</option>
               {triggers.map(t => (
@@ -273,9 +246,8 @@ const MoodTracker = () => {
 
           {/* Sleep Quality */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Sleep Quality: {sleepQuality}/10
             </label>
             <input
@@ -294,9 +266,8 @@ const MoodTracker = () => {
 
           {/* Energy Level */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Energy Level: {energyLevel}/10
             </label>
             <input
@@ -315,9 +286,8 @@ const MoodTracker = () => {
 
           {/* Social Connection */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Social Connection: {socialConnection}/10
             </label>
             <input
@@ -336,19 +306,17 @@ const MoodTracker = () => {
 
           {/* Physical Activity */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Physical Activity Today
             </label>
             <select
               value={physicalActivity}
               onChange={(e) => setPhysicalActivity(e.target.value)}
-              className={`w-full p-3 border-2 rounded-lg focus:outline-none ${
-                isToggled 
-                  ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500'
-                  : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400'
-              }`}
+              className={`w-full p-3 border-2 rounded-lg focus:outline-none ${isToggled
+                ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500'
+                : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400'
+                }`}
             >
               <option value="">Select activity level</option>
               <option value="none">No exercise</option>
@@ -360,19 +328,17 @@ const MoodTracker = () => {
 
           {/* Meal Pattern */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Eating Pattern Today
             </label>
             <select
               value={mealPattern}
               onChange={(e) => setMealPattern(e.target.value)}
-              className={`w-full p-3 border-2 rounded-lg focus:outline-none ${
-                isToggled 
-                  ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500'
-                  : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400'
-              }`}
+              className={`w-full p-3 border-2 rounded-lg focus:outline-none ${isToggled
+                ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500'
+                : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400'
+                }`}
             >
               <option value="">Select eating pattern</option>
               <option value="regular">Regular meals</option>
@@ -385,37 +351,34 @@ const MoodTracker = () => {
 
           {/* Note */}
           <div className="mb-6">
-            <label className={`block text-sm font-semibold mb-2 ${
-              isToggled ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className={`block text-sm font-semibold mb-2 ${isToggled ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               Add a note (optional)
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Write about your day, thoughts, or feelings..."
-              className={`w-full p-3 border-2 rounded-lg focus:outline-none resize-none ${
-                isToggled 
-                  ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500 placeholder-gray-500'
-                  : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400 placeholder-gray-500'
-              }`}
+              className={`w-full p-3 border-2 rounded-lg focus:outline-none resize-none ${isToggled
+                ? 'bg-gray-700 border-gray-600 text-gray-300 focus:border-gray-500 placeholder-gray-500'
+                : 'bg-white border-gray-200 text-gray-800 focus:border-gray-400 placeholder-gray-500'
+                }`}
               rows="3"
             />
           </div>
 
           <button
             onClick={saveMoodEntry}
-            className={`w-full font-semibold py-3 rounded-lg transition-all ${
-              isToggled 
-                ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                : 'bg-gray-900 hover:bg-gray-800 text-white'
-            }`}
+            className={`w-full font-semibold py-3 rounded-lg transition-all ${isToggled
+              ? 'bg-gray-700 hover:bg-gray-600 text-white'
+              : 'bg-gray-900 hover:bg-gray-800 text-white'
+              }`}
           >
             Save Check-in
           </button>
         </div>
 
-        {/* Support Resources */}
+        {/* Support Resources
         <div className={`rounded-2xl shadow-lg p-6 mb-6 ${
           isToggled 
             ? 'bg-linear-to-br from-gray-800 to-gray-700 text-white'
@@ -431,46 +394,39 @@ const MoodTracker = () => {
             <p>• Remember: One exam doesn't define your future</p>
             <p className="font-semibold mt-3">Support: 6303945340(24x7)</p>
           </div>
-        </div>
+        </div> */}
 
         {/* Recent Entries */}
         {entries.length > 0 && (
-          <div className={`rounded-2xl shadow-lg p-6 ${
-            isToggled ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <h3 className={`text-xl font-bold mb-4 ${
-              isToggled ? 'text-white' : 'text-gray-900'
-            }`}>Recent Check-ins</h3>
+          <div className={`rounded-2xl shadow-lg p-6 ${isToggled ? 'bg-gray-800' : 'bg-white'
+            }`}>
+            <h3 className={`text-xl font-bold mb-4 ${isToggled ? 'text-white' : 'text-gray-900'
+              }`}>Recent Check-ins</h3>
             <div className="space-y-3">
               {entries.slice(0, 5).map((entry) => {
                 return (
-                  <div key={entry.id} className={`border-2 rounded-lg p-4 transition-all ${
-                    isToggled ? 'border-gray-700 hover:border-gray-600' : 'border-gray-100 hover:border-gray-200'
-                  }`}>
+                  <div key={entry.id} className={`border-2 rounded-lg p-4 transition-all ${isToggled ? 'border-gray-700 hover:border-gray-600' : 'border-gray-100 hover:border-gray-200'
+                    }`}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{entry.moodEmoji}</span>
                         <div>
-                          <div className={`font-semibold ${
-                            isToggled ? 'text-gray-300' : 'text-gray-800'
-                          }`}>{entry.moodLabel}</div>
-                          <div className={`text-sm ${
-                            isToggled ? 'text-gray-400' : 'text-gray-500'
-                          }`}>{new Date(entry.createdAt).toLocaleDateString()}</div>
+                          <div className={`font-semibold ${isToggled ? 'text-gray-300' : 'text-gray-800'
+                            }`}>{entry.moodLabel}</div>
+                          <div className={`text-sm ${isToggled ? 'text-gray-400' : 'text-gray-500'
+                            }`}>{new Date(entry.createdAt).toLocaleDateString()}</div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
                         <div className="text-right">
-                          <div className={`text-sm font-semibold ${
-                            isToggled ? 'text-gray-300' : 'text-gray-600'
-                          }`}>Stress: {entry.stressLevel}/10</div>
+                          <div className={`text-sm font-semibold ${isToggled ? 'text-gray-300' : 'text-gray-600'
+                            }`}>Stress: {entry.stressLevel}/10</div>
                           {entry.trigger && (
-                            <div className={`text-xs mt-1 ${
-                              isToggled ? 'text-gray-400' : 'text-gray-500'
-                            }`}>{entry.trigger}</div>
+                            <div className={`text-xs mt-1 ${isToggled ? 'text-gray-400' : 'text-gray-500'
+                              }`}>{entry.trigger}</div>
                           )}
                         </div>
-                        <button 
+                        <button
                           onClick={() => deleteEntry(entry.id)}
                           className="text-red-500 hover:text-red-700 p-1 transition-colors"
                         >
@@ -481,9 +437,8 @@ const MoodTracker = () => {
                       </div>
                     </div>
                     {entry.note && (
-                      <p className={`text-sm mt-2 ml-11 ${
-                        isToggled ? 'text-gray-400' : 'text-gray-600'
-                      }`}>{entry.note}</p>
+                      <p className={`text-sm mt-2 ml-11 ${isToggled ? 'text-gray-400' : 'text-gray-600'
+                        }`}>{entry.note}</p>
                     )}
                   </div>
                 )
@@ -494,16 +449,13 @@ const MoodTracker = () => {
 
         {/* Encouragement for first-time users */}
         {entries.length === 0 && (
-          <div className={`rounded-2xl shadow-lg p-8 text-center ${
-            isToggled ? 'bg-gray-800' : 'bg-white'
-          }`}>
+          <div className={`rounded-2xl shadow-lg p-8 text-center ${isToggled ? 'bg-gray-800' : 'bg-white'
+            }`}>
             <div className="text-5xl mb-4">📚</div>
-            <h3 className={`text-xl font-bold mb-2 ${
-              isToggled ? 'text-white' : 'text-gray-900'
-            }`}>Start Your Wellness Journey</h3>
-            <p className={`${
-              isToggled ? 'text-gray-400' : 'text-gray-600'
-            }`}>Begin by checking in with how you're feeling today. Small steps lead to big changes.</p>
+            <h3 className={`text-xl font-bold mb-2 ${isToggled ? 'text-white' : 'text-gray-900'
+              }`}>Start Your Wellness Journey</h3>
+            <p className={`${isToggled ? 'text-gray-400' : 'text-gray-600'
+              }`}>Begin by checking in with how you're feeling today. Small steps lead to big changes.</p>
           </div>
         )}
       </div>

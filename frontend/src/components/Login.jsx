@@ -40,10 +40,7 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData)
       localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify({ 
-        name: response.data.name,
-        email: formData.email 
-      }))
+      localStorage.setItem('user', JSON.stringify(response.data.user))
       localStorage.setItem('isNewUser', 'false')
       setIsAuthenticated(true)
       window.location.href = '/dashboard'

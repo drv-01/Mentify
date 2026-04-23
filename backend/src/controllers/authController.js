@@ -1,8 +1,6 @@
-const { configDotenv } = require("dotenv");
 const prisma = require("../db/prisma.js");
 const { hashPassword, verifyPassword } = require("../Utils/bcryptPassword.js");
 const { generateToken } = require("../Utils/token.js");
-configDotenv();
 const signupUser = async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
 
@@ -27,8 +25,23 @@ const signupUser = async (req, res) => {
 
     const tokens = generateToken(newUser.id);
     res.cookie('token', tokens.accessTokens, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', maxAge: 24 * 60 * 60 * 1000 });
-    return res.status(201).json({ message: "User created successfully!", token: tokens.accessTokens });
+    
+    const userToReturn = {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      bio: newUser.bio,
+      phone: newUser.phone,
+      location: newUser.location
+    };
+    
+    return res.status(201).json({ 
+      message: "User created successfully!", 
+      token: tokens.accessTokens,
+      user: userToReturn
+    });
   } catch (err) {
+    console.error("Signup Error:", err);
     return res.status(500).json({ message: "Server Error!" });
   }
 };
@@ -46,16 +59,36 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials!" });
     }
 
+    if (!user.password) {
+      return res.status(401).json({ message: "This account was created with Google. Please use Google Sign-in." });
+    }
+
     const isPasswordValid = await verifyPassword(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials!" });
     }
 
     const tokens = generateToken(user.id);
     res.cookie('token', tokens.accessTokens, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', maxAge: 24 * 60 * 60 * 1000 });
-    return res.status(200).json({ message: "Login successful!", token: tokens.accessTokens, name: user.name });
+    
+    const userToReturn = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      bio: user.bio,
+      phone: user.phone,
+      location: user.location
+    };
+
+    return res.status(200).json({ 
+      message: "Login successful!", 
+      token: tokens.accessTokens, 
+      user: userToReturn 
+    });
   } catch (err) {
-    return res.status(500).json({ message: "Server Error!" });
+    console.error("Login Error:", err);
+    return res.status(500).json({ message: "Server Error!", error: err.message });
   }
 };
 

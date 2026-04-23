@@ -7,15 +7,13 @@ import Dashboard from './components/Dashboard'
 import Profile from './components/Profile'
 import AuthCallback from './components/AuthCallback'
 import ForgotPassword from './components/ForgotPassword'
-import MoodTracker from './components/MoodTracker'
 import Mentorship from './components/Mentorship'
-import FitnessTracker from './components/FitnessTracker'
-import DietPlanner from './components/DietPlanner'
+import EatFit from './components/EatFit'
 import Scheduler from './components/Scheduler'
-import AiChatbot from './components/AiChatbot'
+import Affectly from './components/Affectly'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('token'))
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -40,31 +38,23 @@ function App() {
           />
           <Route 
             path="/profile" 
-            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Profile setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
           />
           <Route 
-            path="/mood-tracker" 
-            element={isAuthenticated ? <MoodTracker /> : <Navigate to="/login" />} 
+            path="/affectly" 
+            element={isAuthenticated ? <Affectly setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/mentorship" 
-            element={isAuthenticated ? <Mentorship /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Mentorship setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
           />
           <Route 
-            path="/fitness-tracker" 
-            element={isAuthenticated ? <FitnessTracker /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/diet-planner" 
-            element={isAuthenticated ? <DietPlanner /> : <Navigate to="/login" />} 
+            path="/eat-fit" 
+            element={isAuthenticated ? <EatFit setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/scheduler" 
-            element={isAuthenticated ? <Scheduler /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/ai-chatbot" 
-            element={isAuthenticated ? <AiChatbot /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Scheduler setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/auth/callback" 
