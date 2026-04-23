@@ -508,7 +508,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
                 <p className={`text-xs font-medium italic ${
                   isToggled ? 'text-gray-300' : 'text-gray-600'
                 }`}>
-                  {streak >= 7 ? '🔥 You are on fire!' : streak >= 3 ? '⚡ Building habits!' : '🌱 Just getting started!'}
+                  {streak >= 7 ? '🔥 You are on fire!' : streak >= 3 ? '⚡ Building habits!' : '🌱 Getting started!'}
                 </p>
               </div>
             </div>
