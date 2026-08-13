@@ -22,6 +22,8 @@ const Login = ({ setIsAuthenticated }) => {
         oauth_no_code: 'Google authentication failed - no authorization code received.',
         oauth_config_error: 'Google authentication is not properly configured.',
         oauth_server_error: 'Google authentication server error. Please try again.',
+        oauth_invalid_state: 'Google authentication session expired. Please try again.',
+        oauth_email_unverified: 'Your Google account email must be verified.',
         oauth_parse_error: 'Failed to process Google authentication data.',
         oauth_no_data: 'No authentication data received from Google.'
       }
@@ -154,7 +156,6 @@ const Login = ({ setIsAuthenticated }) => {
 
           <button
             onClick={() => {
-              console.log('Initiating Google Auth, API URL:', API_BASE_URL)
               window.location.href = `${API_BASE_URL}/api/auth/google`
             }}
             className={`mt-4 w-full flex items-center justify-center px-4 py-3 border rounded-lg font-semibold transition-all duration-200 ${

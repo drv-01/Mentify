@@ -10,6 +10,14 @@ const Mentorship = ({ setIsAuthenticated }) => {
   const [isToggled, setIsToggled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterDomain, setFilterDomain] = useState('all')
+  const [customMentors, setCustomMentors] = useState([])
+  const [showMentorForm, setShowMentorForm] = useState(false)
+  const [mentorFormError, setMentorFormError] = useState('')
+  const [savingMentor, setSavingMentor] = useState(false)
+  const [mentorForm, setMentorForm] = useState({
+    name: '', role: '', company: '', email: '', phone: '', linkedin: '',
+    domain: '', specialization: '', experience: '', availability: '', bio: '',
+  })
 
   const [showConnectedPopup, setShowConnectedPopup] = useState(false)
   const [expandedBios, setExpandedBios] = useState({})
@@ -62,7 +70,7 @@ const Mentorship = ({ setIsAuthenticated }) => {
     localStorage.setItem('recentActivities', JSON.stringify(updatedActivities))
   }, [])
 
-  const mentors = [
+  const defaultMentors = [
     {
       id: 1,
       name: 'Dhruv Kumar',
@@ -161,11 +169,82 @@ const Mentorship = ({ setIsAuthenticated }) => {
     }
   ]
 
+  const mapCustomMentor = (mentor) => ({
+    ...mentor,
+    id: `custom-${mentor.id}`,
+    sourceId: mentor.id,
+    isCustom: true,
+    company: mentor.company || 'Independent Mentor',
+    experience: mentor.experience || 'Not specified',
+    specialization: mentor.specialization || [],
+    focus: [mentor.domain],
+    availability: mentor.availability,
+    rating: 'New',
+    sessions: 0,
+    image: '🧑‍🏫',
+    bio: mentor.bio || 'No mentor introduction has been added yet.',
+    contact: { email: mentor.email, phone: mentor.phone || 'Not provided', linkedin: mentor.linkedin || 'Not provided' },
+  })
+
+  const mentors = [...customMentors.map(mapCustomMentor), ...defaultMentors]
+
+  const fetchCustomMentors = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/mentorship/custom`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      setCustomMentors(response.data)
+    } catch (error) {
+      checkAuthError(error, navigate, setIsAuthenticated)
+    }
+  }
+
+  useEffect(() => {
+    fetchCustomMentors()
+  }, [])
+
+  const updateMentorForm = (event) => {
+    const { name, value } = event.target
+    setMentorForm((current) => ({ ...current, [name]: value }))
+  }
+
+  const addMentor = async (event) => {
+    event.preventDefault()
+    setSavingMentor(true)
+    setMentorFormError('')
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/mentorship/custom`, mentorForm, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      setCustomMentors((current) => [response.data, ...current])
+      setMentorForm({ name: '', role: '', company: '', email: '', phone: '', linkedin: '', domain: '', specialization: '', experience: '', availability: '', bio: '' })
+      setShowMentorForm(false)
+    } catch (error) {
+      if (!checkAuthError(error, navigate, setIsAuthenticated)) {
+        setMentorFormError(error.response?.data?.error || 'Could not add this mentor. Please try again.')
+      }
+    } finally {
+      setSavingMentor(false)
+    }
+  }
+
+  const deleteMentor = async (mentor) => {
+    if (!mentor.isCustom || !window.confirm(`Remove ${mentor.name} from your mentor list?`)) return
+    try {
+      await axios.delete(`${API_BASE_URL}/api/mentorship/custom/${mentor.sourceId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      setCustomMentors((current) => current.filter((item) => item.id !== mentor.sourceId))
+    } catch (error) {
+      checkAuthError(error, navigate, setIsAuthenticated)
+    }
+  }
+
   const logMentorConnection = async (mentor) => {
     try {
       const token = localStorage.getItem('token')
       await axios.post(`${API_BASE_URL}/api/mentorship/connect`, {
-        mentorId: mentor.id,
+        mentorId: mentor.isCustom ? mentor.sourceId : mentor.id,
         mentorName: mentor.name,
         mentorType: 'default'
       }, {
@@ -244,7 +323,7 @@ const Mentorship = ({ setIsAuthenticated }) => {
         <div className={`rounded-2xl shadow-lg p-4 sm:p-6 mb-8 ${
           isToggled ? 'bg-gray-800/60' : 'bg-white/90'
         }`}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-4">
             <div className="relative">
               <input
                 type="text"
@@ -276,6 +355,12 @@ const Mentorship = ({ setIsAuthenticated }) => {
                 </option>
               ))}
             </select>
+            <button
+              onClick={() => setShowMentorForm(true)}
+              className="rounded-lg px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-white font-bold transition-colors"
+            >
+              + Add Mentor
+            </button>
           </div>
         </div>
 
@@ -382,6 +467,12 @@ const Mentorship = ({ setIsAuthenticated }) => {
                   <span>{mentor.availability}</span>
                 </div>
 
+                {mentor.isCustom && (
+                  <button onClick={() => deleteMentor(mentor)} className="mb-3 text-sm font-semibold text-red-500 hover:text-red-400 text-left">
+                    Remove mentor
+                  </button>
+                )}
+
                 <div className={`mb-4 p-3 rounded-xl ${
                   isToggled ? 'bg-gray-700/40' : 'bg-gray-50'
                 }`}>
@@ -422,6 +513,40 @@ const Mentorship = ({ setIsAuthenticated }) => {
           })}
         </div>
 
+        {showMentorForm && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto p-4">
+            <div className={`max-w-2xl mx-auto my-8 rounded-2xl shadow-2xl ${isToggled ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+              <div className="p-6 border-b border-gray-700/30 flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-black">Add a mentor</h2>
+                  <p className={`mt-1 text-sm ${isToggled ? 'text-gray-400' : 'text-gray-600'}`}>Capture the details students need before reaching out.</p>
+                </div>
+                <button onClick={() => setShowMentorForm(false)} className="text-2xl leading-none text-gray-400 hover:text-current" aria-label="Close">×</button>
+              </div>
+              <form onSubmit={addMentor} className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <MentorInput label="Full name" name="name" value={mentorForm.name} onChange={updateMentorForm} required dark={isToggled} />
+                <MentorInput label="Professional role" name="role" placeholder="e.g. Product Manager" value={mentorForm.role} onChange={updateMentorForm} required dark={isToggled} />
+                <MentorInput label="Organisation / company" name="company" value={mentorForm.company} onChange={updateMentorForm} dark={isToggled} />
+                <MentorInput label="Focus domain" name="domain" placeholder="e.g. Product Management" value={mentorForm.domain} onChange={updateMentorForm} required dark={isToggled} />
+                <MentorInput label="Email address" name="email" type="email" value={mentorForm.email} onChange={updateMentorForm} required dark={isToggled} />
+                <MentorInput label="Contact number" name="phone" type="tel" value={mentorForm.phone} onChange={updateMentorForm} dark={isToggled} />
+                <MentorInput label="LinkedIn profile" name="linkedin" placeholder="linkedin.com/in/name" value={mentorForm.linkedin} onChange={updateMentorForm} dark={isToggled} />
+                <MentorInput label="Experience" name="experience" placeholder="e.g. 8 years" value={mentorForm.experience} onChange={updateMentorForm} dark={isToggled} />
+                <MentorInput label="Specializations" name="specialization" placeholder="Comma-separated skills" value={mentorForm.specialization} onChange={updateMentorForm} required dark={isToggled} />
+                <MentorInput label="Availability to contribute" name="availability" placeholder="e.g. Saturdays, 10 AM–1 PM" value={mentorForm.availability} onChange={updateMentorForm} required dark={isToggled} />
+                <div className="sm:col-span-2">
+                  <MentorInput label="About the mentor" name="bio" placeholder="Short introduction, mentoring style, or the students they can help." value={mentorForm.bio} onChange={updateMentorForm} dark={isToggled} textarea />
+                </div>
+                {mentorFormError && <p className="sm:col-span-2 text-sm text-red-500">{mentorFormError}</p>}
+                <div className="sm:col-span-2 flex justify-end gap-3 mt-2">
+                  <button type="button" onClick={() => setShowMentorForm(false)} className={`px-5 py-3 rounded-xl font-bold ${isToggled ? 'bg-gray-700' : 'bg-gray-100'}`}>Cancel</button>
+                  <button type="submit" disabled={savingMentor} className="px-5 py-3 rounded-xl font-bold bg-cyan-500 hover:bg-cyan-400 text-white disabled:opacity-60">{savingMentor ? 'Adding…' : 'Add mentor'}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Connected Success Popup */}
         {showConnectedPopup && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -459,3 +584,8 @@ const Mentorship = ({ setIsAuthenticated }) => {
 }
 
 export default Mentorship
+
+function MentorInput({ label, name, value, onChange, required = false, placeholder, type = 'text', textarea = false, dark }) {
+  const className = `w-full mt-1 px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${dark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`
+  return <label className="block text-sm font-semibold">{label}{required && <span className="text-cyan-500"> *</span>}{textarea ? <textarea name={name} value={value} onChange={onChange} placeholder={placeholder} rows="3" className={className} /> : <input name={name} value={value} onChange={onChange} placeholder={placeholder} type={type} required={required} className={className} />}</label>
+}

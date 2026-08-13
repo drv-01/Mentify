@@ -118,13 +118,13 @@ const Signup = ({ setIsAuthenticated }) => {
             <input
               type="password"
               required
-              minLength="6"
+              minLength="8"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                 isToggled 
                   ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
                   : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
               }`}
-              placeholder="Create a password (min. 6 characters)"
+              placeholder="Create a password (min. 8 characters)"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
@@ -191,7 +191,6 @@ const Signup = ({ setIsAuthenticated }) => {
 
           <button
             onClick={() => {
-              console.log('Initiating Google Auth from Signup, API URL:', API_BASE_URL)
               window.location.href = `${API_BASE_URL}/api/auth/google`
             }}
             type="button"

@@ -11,15 +11,19 @@ const taskRoutes = require("./routes/taskRoutes.js")
 const chatRoutes = require("./routes/chatRoutes.js")
 const activityRoutes = require("./routes/activityRoutes.js")
 const profileRoutes = require("./routes/profileRoutes.js")
+const { getAllowedOrigins } = require('./config/runtime');
 
 const app = express();
 
-// const allowedOrigins = ['http://localhost:5173', 'https://mentifyapp.vercel.app'];
-
-
 app.use(cors({
-  origin: '*',
-  credentials: true,
+  origin(origin, callback) {
+    // Requests without an Origin header include server-to-server calls and health checks.
+    if (!origin || getAllowedOrigins().has(origin.replace(/\/$/, ''))) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   preflightContinue: false,

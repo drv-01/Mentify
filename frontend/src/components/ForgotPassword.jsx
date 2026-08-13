@@ -4,7 +4,7 @@ import axios from 'axios'
 import { API_BASE_URL } from '../config/api'
 
 const ForgotPassword = () => {
-  const [step, setStep] = useState(1) // 1: email and password, 2: success
+  const [step, setStep] = useState(1) // 1: request email, 2: set new password, 3: success
   const [email, setEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -16,6 +16,7 @@ const ForgotPassword = () => {
   useEffect(() => {
     const theme = localStorage.getItem('theme')
     setIsToggled(theme === 'dark')
+    if (new URLSearchParams(window.location.search).get('token')) setStep(2)
   }, [])
 
   const handleResetPassword = async (e) => {
@@ -23,28 +24,33 @@ const ForgotPassword = () => {
     setLoading(true)
     setError('')
 
+    try {
+      await axios.post(`${API_BASE_URL}/api/auth/request-password-reset`, { email })
+      setSuccess('If an account exists for that email, a reset link has been sent.')
+      setStep(3)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to reset password')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSetPassword = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
     if (newPassword !== confirmPassword) {
       setError('Passwords do not match')
       setLoading(false)
       return
     }
-
     try {
-      // Check if user exists first
-      const userCheck = await axios.get(`${API_BASE_URL}/api/auth/user-exists?email=${email}`)
-      if (!userCheck.data.exists) {
-        setError('No account found with this email address')
-        setLoading(false)
-        return
-      }
-
-      // Reset password directly
       await axios.post(`${API_BASE_URL}/api/auth/reset-password`, {
-        email,
-        newPassword
+        token: new URLSearchParams(window.location.search).get('token'),
+        newPassword,
       })
       setSuccess('Password reset successfully! You can now login with your new password.')
-      setStep(2)
+      setStep(3)
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to reset password')
     } finally {
@@ -73,8 +79,9 @@ const ForgotPassword = () => {
           <p className={`transition-all duration-300 ${
             isToggled ? 'text-gray-400' : 'text-gray-600'
           }`}>
-            {step === 1 && 'Enter your email and new password'}
-            {step === 2 && 'Password reset successful!'}
+            {step === 1 && 'Enter your email to receive a secure reset link'}
+            {step === 2 && 'Choose your new password'}
+            {step === 3 && success}
           </p>
         </div>
 
@@ -97,43 +104,6 @@ const ForgotPassword = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <label className={`block text-sm font-semibold transition-all duration-300 ${
-                isToggled ? 'text-gray-300' : 'text-gray-900'
-              }`}>New Password</label>
-              <input
-                type="password"
-                required
-                minLength="6"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                  isToggled 
-                    ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
-                    : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
-                }`}
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={`block text-sm font-semibold transition-all duration-300 ${
-                isToggled ? 'text-gray-300' : 'text-gray-900'
-              }`}>Confirm New Password</label>
-              <input
-                type="password"
-                required
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                  isToggled 
-                    ? 'border-gray-600 focus:ring-gray-500 bg-gray-800 text-white placeholder-gray-400' 
-                    : 'border-gray-300 focus:ring-gray-400 bg-white text-gray-900 placeholder-gray-500'
-                }`}
-                placeholder="Confirm new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                 {error}
@@ -147,12 +117,27 @@ const ForgotPassword = () => {
                 isToggled ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-900 hover:bg-gray-800'
               }`}
             >
-              {loading ? 'Resetting...' : 'Reset Password'}
+              {loading ? 'Sending...' : 'Send Reset Link'}
             </button>
           </form>
         )}
 
         {step === 2 && (
+          <form onSubmit={handleSetPassword} className="space-y-6">
+            <div className="space-y-2">
+              <label className={`block text-sm font-semibold transition-all duration-300 ${isToggled ? 'text-gray-300' : 'text-gray-900'}`}>New Password</label>
+              <input type="password" required minLength="8" className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${isToggled ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-gray-900'}`} placeholder="At least 8 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <label className={`block text-sm font-semibold transition-all duration-300 ${isToggled ? 'text-gray-300' : 'text-gray-900'}`}>Confirm New Password</label>
+              <input type="password" required className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${isToggled ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-gray-900'}`} placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            </div>
+            {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">{error}</div>}
+            <button type="submit" disabled={loading} className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 ${isToggled ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-900 hover:bg-gray-800'}`}>{loading ? 'Resetting...' : 'Reset Password'}</button>
+          </form>
+        )}
+
+        {step === 3 && (
           <div className="text-center space-y-6">
             <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg text-sm">
               {success}

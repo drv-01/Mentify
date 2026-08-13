@@ -8,7 +8,7 @@ const AuthCallback = ({ setIsAuthenticated }) => {
   useEffect(() => {
     const handleOAuthCallback = () => {
       try {
-        const urlParams = new URLSearchParams(window.location.search)
+        const urlParams = new URLSearchParams(window.location.hash.slice(1))
         const authParam = urlParams.get('auth')
         const errorParam = urlParams.get('error')
 
@@ -23,7 +23,10 @@ const AuthCallback = ({ setIsAuthenticated }) => {
 
         if (authParam) {
           try {
-            const authData = JSON.parse(atob(authParam))
+            const base64 = authParam.replace(/-/g, '+').replace(/_/g, '/')
+            const binary = atob(base64)
+            const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+            const authData = JSON.parse(new TextDecoder().decode(bytes))
             const { token, user, isNewUser } = authData
 
             console.log('Auth data received:', { token: !!token, user: !!user, isNewUser })
@@ -35,7 +38,7 @@ const AuthCallback = ({ setIsAuthenticated }) => {
             localStorage.setItem('token', token)
             localStorage.setItem('user', JSON.stringify(user))
             localStorage.setItem('isNewUser', isNewUser.toString())
-            
+            window.history.replaceState({}, document.title, window.location.pathname)
             setIsAuthenticated(true)
             navigate('/dashboard')
           } catch (parseError) {
